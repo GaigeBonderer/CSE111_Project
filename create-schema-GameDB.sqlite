@@ -1,0 +1,87 @@
+CREATE TABLE Entity (
+    EntityID INTEGER PRIMARY KEY,
+    Attack INTEGER NOT NULL,
+    Defense INTEGER NOT NULL,
+    Level INTEGER NOT NULL,
+    Speed INTEGER NOT NULL,
+    CurrentHP INTEGER NOT NULL,
+    TotalHP INTEGER NOT NULL
+);
+
+CREATE TABLE Player (
+    EntityID INTEGER PRIMARY KEY,
+    Gender CHAR(1) NOT NULL,
+    Username VARCHAR(25) NOT NULL,
+    FOREIGN KEY (EntityID) REFERENCES Entity(EntityID)
+);
+
+CREATE TABLE Enemy (
+    EntityID INTEGER PRIMARY KEY,
+    Name VARCHAR(50) NOT NULL,
+    IsBoss BOOLEAN NOT NULL,
+    FOREIGN KEY (EntityID) REFERENCES Entity(EntityID)
+);
+
+CREATE TABLE Weapon (
+    WeaponID INTEGER PRIMARY KEY,
+    Description VARCHAR(100),
+    Rank INTEGER NOT NULL,
+    Type VARCHAR(25) NOT NULL,
+    Name VARCHAR(50) NOT NULL,
+    SpecialATR VARCHAR(50),
+    Damage INTEGER NOT NULL,
+    ATKSpeed INTEGER NOT NULL,
+    Range INTEGER NOT NULL
+);
+
+CREATE TABLE Guild (
+    GuildName VARCHAR(50) PRIMARY KEY,
+    GuildBonus INTEGER NOT NULL,
+    TotalPlayers INTEGER NOT NULL
+);
+
+CREATE TABLE Clan (
+    ClanName VARCHAR(50) PRIMARY KEY,
+    ClanBonus INTEGER NOT NULL,
+    BossName VARCHAR(50) NOT NULL
+);
+
+CREATE TABLE Inventory (
+    EntityID INTEGER NOT NULL,
+    WeaponID INTEGER NOT NULL,
+    PRIMARY KEY (EntityID, WeaponID),
+    FOREIGN KEY (EntityID) REFERENCES Player(EntityID),
+    FOREIGN KEY (WeaponID) REFERENCES Weapon(WeaponID)
+);
+
+CREATE TABLE Equipped (
+    EntityID INTEGER NOT NULL,
+    WeaponID INTEGER NOT NULL,
+    PRIMARY KEY (EntityID, WeaponID),
+    FOREIGN KEY (EntityID) REFERENCES Entity(EntityID),
+    FOREIGN KEY (WeaponID) REFERENCES Weapon(WeaponID)
+);
+
+CREATE TABLE CanDrop (
+    WeaponID INTEGER NOT NULL,
+    EntityID INTEGER NOT NULL,
+    PRIMARY KEY (WeaponID, EntityID),
+    FOREIGN KEY (WeaponID) REFERENCES Weapon(WeaponID),
+    FOREIGN KEY (EntityID) REFERENCES Enemy(EntityID)
+);
+
+CREATE TABLE PlayerBelongs (
+    EntityID INTEGER NOT NULL,
+    GuildName VARCHAR(50) NOT NULL,
+    PRIMARY KEY (EntityID, GuildName),
+    FOREIGN KEY (EntityID) REFERENCES Player(EntityID),
+    FOREIGN KEY (GuildName) REFERENCES Guild(GuildName)
+);
+
+CREATE TABLE EnemyBelongs (
+    EntityID INTEGER NOT NULL,
+    ClanName VARCHAR(50) NOT NULL,
+    PRIMARY KEY (EntityID, ClanName),
+    FOREIGN KEY (EntityID) REFERENCES Enemy(EntityID),
+    FOREIGN KEY (ClanName) REFERENCES Clan(ClanName)
+);
