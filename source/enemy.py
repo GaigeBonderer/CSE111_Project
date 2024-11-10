@@ -9,12 +9,12 @@ from drop_tables import( drop_player, drop_entity, drop_enemy, drop_weapon,
 descriptor = ["Vicious", "Dark", "Evil", "Brutal", "Savage",
             "Malicious", "Sinister", "Wicked", "Corrupt", "Dreadful",
             "LightFooted", "Armored", "Capatalist", "Communist", "Crazy",
-            "Rare", "Wretched", "Jacked", "Starved", "Bloody"]
+            "Rare", "Wretched", "Jacked", "Starved", "Bloody", ""]
 
 clan_name = ["Orc", "Goblin", "Demon", "Troll", "Vampire",
             "Zombie", "Wraith", "Skeleton", "Golem", "Dragon",
             "Ghost",  "SkinWalker",  "FalseGod",  "Mummy",  "Warlock",
-            "Ghoul",  "Arachnid",  "Cyclops",  "Werewolf",  "CursedSpirit",]
+            "Ghoul",  "Arachnid",  "Cyclops",  "Werewolf",  "CursedSpirit"]
 
 def get_db_connection():
     return sqlite3.connect('../GameDB.sqlite')
@@ -76,10 +76,26 @@ def populate_enemy():
         VALUES (?, ?, ?)
     """, (entity_id, name, is_boss))
 
+    assign_enemy_to_clan(cursor, entity_id, name)
+
     conn.commit()
     conn.close()
 
     print(f"Enemy '{name}' created with Level {level}, Attack {attack}, Defense {defense}, Speed {speed}, HP {total_hp}, Current HP {current_hp}, IsBoss {is_boss}")
+
+# ////////////////////////////////////////////////////////////////////////////////////////////////
+
+def assign_enemy_to_clan(cursor, entity_id, enemy_name):
+    clan = next((clan for clan in clan_name if clan in enemy_name), None)
+
+    if clan:
+        cursor.execute("""
+            INSERT INTO EnemyBelongs (EntityID, ClanName)
+            VALUES (?, ?)
+        """, (entity_id, clan))
+        print(f"Assigned '{enemy_name}' to clan '{clan}'")
+    else:
+        print(f"Could not assign clan for '{enemy_name}'")
 
 # ////////////////////////////////////////////////////////////////////////////////////////////////
 

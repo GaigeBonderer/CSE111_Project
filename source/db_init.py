@@ -60,7 +60,7 @@ def create_tables():
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS Guild (
             GuildName VARCHAR(50) PRIMARY KEY,
-            GuildBonus INT NOT NULL,
+            GuildBonus VARCHAR(50) NOT NULL,
             TotalPlayers INT NOT NULL
         )
     """)
@@ -69,7 +69,7 @@ def create_tables():
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS Clan (
             ClanName VARCHAR(50) PRIMARY KEY,
-            ClanBonus INT NOT NULL,
+            ClanBonus VARCHAR(50) NOT NULL,
             BossName VARCHAR(50) NOT NULL
         )
     """)
