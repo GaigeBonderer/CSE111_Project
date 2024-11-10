@@ -7,10 +7,11 @@ def create_tables():
     conn = get_db_connection()
     cursor = conn.cursor()
     
-    # Entity table
+    # Entity
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS Entity (
             EntityID INTEGER PRIMARY KEY AUTOINCREMENT,
+            Type CHAR(1) NOT NULL,
             Attack INT NOT NULL,
             Defense INT NOT NULL,
             Level INT NOT NULL,
@@ -20,7 +21,7 @@ def create_tables():
         )
     """)
     
-    # Player table
+    # Player
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS Player (
             EntityID INTEGER PRIMARY KEY,
@@ -30,7 +31,7 @@ def create_tables():
         )
     """)
 
-    # Enemy table
+    # Enemy
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS Enemy (
             EntityID INTEGER PRIMARY KEY,
@@ -40,7 +41,7 @@ def create_tables():
         )
     """)
 
-    # Weapon table
+    # Weapon
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS Weapon (
             WeaponID INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -55,7 +56,7 @@ def create_tables():
         )
     """)
 
-    # Guild table
+    # Guild
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS Guild (
             GuildName VARCHAR(50) PRIMARY KEY,
@@ -64,7 +65,7 @@ def create_tables():
         )
     """)
 
-    # Clan table
+    # Clan
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS Clan (
             ClanName VARCHAR(50) PRIMARY KEY,
@@ -73,7 +74,7 @@ def create_tables():
         )
     """)
 
-    # Inventory table
+    # Inventory
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS Inventory (
             EntityID INT NOT NULL,
@@ -84,7 +85,7 @@ def create_tables():
         )
     """)
 
-    # Equipped table
+    # Equipped
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS Equipped (
             EntityID INT NOT NULL,
@@ -95,7 +96,7 @@ def create_tables():
         )
     """)
 
-    # CanDrop table
+    # CanDrop
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS CanDrop (
             WeaponID INT NOT NULL,
@@ -106,7 +107,7 @@ def create_tables():
         )
     """)
 
-    # PlayerBelongs table
+    # PlayerBelongs
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS PlayerBelongs (
             EntityID INT NOT NULL,
@@ -117,7 +118,7 @@ def create_tables():
         )
     """)
 
-    # EnemyBelongs table
+    # EnemyBelongs
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS EnemyBelongs (
             EntityID INT NOT NULL,
