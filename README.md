@@ -6,3 +6,6 @@ OR
 Use generation files (i.e player.py) to create tables by running them: python3 player.py
 
 
+To run query file in terminal: 
+1. bash
+2. sqlite3 GameDB.sqlite < Queries/Query#.sql
