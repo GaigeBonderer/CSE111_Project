@@ -75,7 +75,6 @@ def populate_player(gender, existing_usernames):
         INSERT INTO Entity (Type, Attack, Defense, Level, Speed, CurrentHP, TotalHP) 
         VALUES (?, ?, ?, ?, ?, ?, ?)
     """, ('P', attack, defense, level, speed, current_hp, total_hp))
-
     entity_id = cursor.lastrowid
 
     cursor.execute("""
@@ -83,10 +82,24 @@ def populate_player(gender, existing_usernames):
         VALUES (?, ?, ?)
     """, (entity_id, gender, username))
 
+    cursor.execute("SELECT GuildName FROM Guild ORDER BY RANDOM() LIMIT 1")
+    guild_name = cursor.fetchone()[0]
+
+    cursor.execute("""
+        INSERT INTO PlayerBelongs (EntityID, GuildName) 
+        VALUES (?, ?)
+    """, (entity_id, guild_name))
+
+    cursor.execute("""
+        UPDATE Guild 
+        SET TotalPlayers = TotalPlayers + 1 
+        WHERE GuildName = ?
+    """, (guild_name,))
+
     conn.commit()
     conn.close()
 
-    print(f"Player '{username}' created with Level {level}, Attack {attack}, Defense {defense}, Speed {speed}, HP {total_hp},  Current HP {current_hp}")
+    print(f"Player '{username}' created with Level {level}, Attack {attack}, Defense {defense}, Speed {speed}, HP {total_hp}, Current HP {current_hp}, added to guild '{guild_name}'")
 
 # ////////////////////////////////////////////////////////////////////////////////////////
 
