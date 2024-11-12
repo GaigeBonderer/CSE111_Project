@@ -1,4 +1,4 @@
---PRAGMA table_info(Enemy);
+.headers on
 
 -- Query #4
 -- We want to a group of strong players that are capable of fighting an enemy boss.

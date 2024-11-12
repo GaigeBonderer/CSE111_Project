@@ -1,4 +1,4 @@
-
+.headers on
 -- Query #7:
 -- Which clan has the maximum amount of enemies with a high level (90 or higher)?
 

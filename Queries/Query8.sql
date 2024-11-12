@@ -1,4 +1,4 @@
-
+.headers on
 -- Query #8
 -- How many Evil and Malicious enemies are not from the Demon or Ghoul clan? 
 SELECT 

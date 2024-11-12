@@ -1,4 +1,4 @@
-
+.headers on
 -- Query #9
 -- For the enemies in the Warlock clan, 
 -- find the largest enemy attack that's smaller than the average attack among all enemies in that clan

@@ -1,4 +1,4 @@
-
+.headers on
 -- Query #6:
 -- Find the strongest enemy characters (lvl 95) that have the clan bonus to life steal
 SELECT 

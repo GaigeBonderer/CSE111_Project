@@ -1,7 +1,4 @@
---5 player queries 
---5 weapon queries
---5 enemy queries 
---5 random
+.headers on
 
 -- PRAGMA table_info(Player);
 

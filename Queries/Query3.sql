@@ -1,4 +1,4 @@
-
+.headers on
 -- Query #3:
 -- Find 10 Assasin players that have the lowest current hp
 
