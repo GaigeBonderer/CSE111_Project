@@ -1,4 +1,5 @@
 -- for player queries: 
 -- player types, player hp, players and guilds, player and enemies, players and weapons 
 
--- whats the avg number of total player for guilds that the knights guild bonus 
+-- for enemy queries: 
+-- enemy types, enemy hp, enemy & clans, player and enemies, enemy and weapons 
