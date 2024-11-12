@@ -5,10 +5,11 @@ from drop_tables import( drop_player, drop_entity, drop_enemy, drop_weapon,
                          drop_all)
 import random
 from db_init import create_tables
-from guild import populate_guild  # Assuming this function creates and populates the guilds
-from clan import populate_clans   # Assuming this function creates and populates the clans
-from player import populate_player  # Assuming this function populates individual players
-from enemy import populate_enemy   # Assuming this function populates individual enemies
+from guild import populate_guild
+from clan import populate_clans
+from player import populate_player
+from enemy import populate_enemy
+from weapon import populate_weapon
 
 def populate_all_guilds():
     print("Populating Guilds...")
@@ -33,12 +34,19 @@ def populate_all_enemies():
     for _ in range(num_enemies):
         populate_enemy()
 
+def populate_all_weapons():
+    print("Populating Weapons...")
+    num_weapons = 10000
+    for _ in range(num_weapons):
+        populate_weapon()
+
 if __name__ == "__main__":
 
     create_tables()
 
     populate_all_guilds()
     populate_all_clans()
+    populate_all_weapons()
     populate_all_players()
     populate_all_enemies()
 

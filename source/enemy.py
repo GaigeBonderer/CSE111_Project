@@ -26,6 +26,63 @@ def generate_enemy_name():
 
 # ////////////////////////////////////////////////////////////////////////////////////////////////
 
+def assign_weapon_to_enemy(cursor, entity_id, level):
+
+    if level >= 90:
+        rank_probability = ["Mystic", "Legendary", "Epic", "Rare", "Common"]
+        weights = [0.3, 0.4, 0.2, 0.1, 0.0]
+    elif level >= 70:
+        rank_probability = ["Legendary", "Epic", "Rare", "Common"]
+        weights = [0.2, 0.4, 0.3, 0.1]
+    elif level >= 50:
+        rank_probability = ["Epic", "Rare", "Common"]
+        weights = [0.2, 0.5, 0.3]
+    else:
+        rank_probability = ["Rare", "Common"]
+        weights = [0.3, 0.7]
+
+    selected_rank = random.choices(rank_probability, weights=weights, k=1)[0]
+
+    cursor.execute("SELECT WeaponID FROM Weapon WHERE Rank = ? ORDER BY RANDOM() LIMIT 1", (selected_rank,))
+    weapon = cursor.fetchone()
+    if weapon:
+        weapon_id = weapon[0]
+        cursor.execute("INSERT INTO Equipped (EntityID, WeaponID) VALUES (?, ?)", (entity_id, weapon_id))
+        print(f"Assigned {selected_rank} weapon (ID: {weapon_id}) to enemy (ID: {entity_id})")
+
+        assign_drops_to_enemy(cursor, entity_id, weapon_id, level)
+
+# ////////////////////////////////////////////////////////////////////////////////////////////////
+
+def assign_drops_to_enemy(cursor, entity_id, equipped_weapon_id, level):
+    rank_probability = ["Common", "Rare", "Epic", "Legendary", "Mystic"]
+    
+    if level >= 90:
+        weights = [0.0, 0.1, 0.2, 0.3, 0.4]
+    elif level >= 70:
+        weights = [0.1, 0.2, 0.3, 0.3, 0.1]
+    elif level >= 50:
+        weights = [0.2, 0.3, 0.3, 0.2, 0.0]
+    else:
+        weights = [0.4, 0.3, 0.2, 0.1, 0.0]
+
+    drop_weapons = {equipped_weapon_id}
+    
+    num_drops = random.randint(1, 9)
+
+    while len(drop_weapons) < num_drops:
+        selected_rank = random.choices(rank_probability, weights=weights, k=1)[0]
+        cursor.execute("SELECT WeaponID FROM Weapon WHERE Rank = ? ORDER BY RANDOM() LIMIT 1", (selected_rank,))
+        weapon = cursor.fetchone()
+        if weapon:
+            drop_weapons.add(weapon[0])
+
+    for weapon_id in drop_weapons:
+        cursor.execute("INSERT OR IGNORE INTO CanDrop (EntityID, WeaponID) VALUES (?, ?)", (entity_id, weapon_id))
+        print(f"Assigned weapon (ID: {weapon_id}) to drop list for enemy (ID: {entity_id})")
+
+# ////////////////////////////////////////////////////////////////////////////////////////////////
+
 def populate_enemy():
 
     name = generate_enemy_name()
@@ -77,6 +134,8 @@ def populate_enemy():
     """, (entity_id, name, is_boss))
 
     assign_enemy_to_clan(cursor, entity_id, name)
+
+    assign_weapon_to_enemy(cursor, entity_id, level)
 
     conn.commit()
     conn.close()
