@@ -4,7 +4,7 @@
 
 ------------------------------------------------------------------------------------------------------------------
 -- Query #1:
--- Which player characters have a level of 50 or greater and are part of the AncientLionGuild?
+-- Which player characters have a level of 50 or greater and are part of the MysticPhoenixHunters?
 
 SELECT 
     Player.EntityID, Player.Username, Player.Gender, Entity.Level
@@ -18,4 +18,4 @@ JOIN
     Guild ON PlayerBelongs.GuildName = Guild.GuildName
 WHERE 
     Entity.Level >= 50 
-    AND Guild.GuildName = 'AncientLionGuild'; 
+    AND Guild.GuildName = 'MysticPhoenixHunters'; 
