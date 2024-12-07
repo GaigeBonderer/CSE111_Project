@@ -1,7 +1,9 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Create</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Entry</title>
     <link rel="stylesheet" href="../static/css/create.css">
 </head>
 <body>
@@ -17,6 +19,24 @@
         </ul>
     </nav>
 
+    <h1>Create Entry</h1>
+    <form id="create-form" method="POST" action="{{ url_for('create_page') }}">
+        <label for="table-select">Select Table:</label>
+        <select id="table-select" name="table" required>
+            <option value="">--Select--</option>
+            <option value="Player">Player</option>
+            <option value="Enemy">Enemy</option>
+            <option value="Weapon">Weapon</option>
+            <option value="Guild">Guild</option>
+            <option value="Clan">Clan</option>
+        </select>
+
+        <div id="form-fields">
+            <!-- Form fields dynamically populated here -->
+        </div>
+
+        <button type="submit">Submit</button>
+    </form>
 
     <script src="../static/js/create.js"></script>
 </body>

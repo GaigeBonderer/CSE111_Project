@@ -4,33 +4,33 @@ import sqlite3
 app = Flask(__name__)
 app.secret_key = 'weapon'
 
-# ADMIN_USERNAME = 'admin'
-# ADMIN_PASSWORD = 'password'
+
 
 def get_db_connection():
     return sqlite3.connect('../GameDB.sqlite')
+
+
+
 
 @app.route('/')
 def home():
     return render_template('login.html')
 
+
+
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    # if request.method == 'POST':
-    #     username = request.form['username']
-    #     password = request.form['password']
-    #     if username == ADMIN_USERNAME and password == ADMIN_PASSWORD:
-    #         session['admin'] = True
-    #         return redirect(url_for('admin_page'))
-    #     else:
-    #         return '<h1>Invalid credentials</h1>'
     return render_template('login.html')
+
+
+
 
 @app.route('/portal')
 def admin_page():
-    # if not session.get('admin'):
-    #     return redirect(url_for('login'))
     return render_template('portal.html')
+
+
 
 
 @app.route('/logout')
@@ -38,40 +38,134 @@ def logout():
     session.pop('admin', None)
     return redirect(url_for('login'))
 
+
+
+
 @app.route('/read')
 def read_page():
-    # conn = get_db_connection()
-    # cursor = conn.cursor()
-    # cursor.execute("SELECT * FROM Player")
-    # players = cursor.fetchall()
-    # conn.close()
     return render_template('read.html')
 
-@app.route('/create')
+
+
+
+@app.route('/create', methods=['GET', 'POST'])
 def create_page():
-    # if request.method == 'POST':
-    #     username = request.form['username']
-    #     gender = request.form['gender']
-    #     conn = get_db_connection()
-    #     cursor = conn.cursor()
-    #     cursor.execute("INSERT INTO Player (Username, Gender) VALUES (?, ?)", (username, gender))
-    #     conn.commit()
-    #     conn.close()
-    #     return redirect(url_for('read'))
+    if request.method == 'POST':
+        table = request.form.get('table')
+
+        conn = get_db_connection()
+        cursor = conn.cursor()
+
+        if table == "Player":
+            username = request.form.get('username')
+            gender = request.form.get('gender')
+
+            # type = request.form.get('type')
+            atk = request.form.get('atk')
+            defe = request.form.get('defe')
+            lvl = request.form.get('lvl')
+            spd = request.form.get('spd')
+            chp = request.form.get('chp')
+            thp = request.form.get('thp')
+
+            # Add to Entity table
+            cursor.execute("""
+                INSERT INTO Entity (Type, Attack, Defense, Level, Speed, CurrentHP, TotalHP)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
+            """, ('P', atk, defe, lvl, spd, chp, thp))
+            entity_id = cursor.lastrowid
+
+            # Add to Player table
+            cursor.execute("""
+                INSERT INTO Player (EntityID, Gender, Username)
+                VALUES (?, ?, ?)
+            """, (entity_id, gender, username))
+
+        elif table == "Enemy":
+            name = request.form.get('name')
+            is_boss = request.form.get('isBoss')
+
+            # type = request.form.get('type')
+            atk = request.form.get('atk')
+            defe = request.form.get('defe')
+            lvl = request.form.get('lvl')
+            spd = request.form.get('spd')
+            chp = request.form.get('chp')
+            thp = request.form.get('thp')
+
+            # Add to Entity table
+            cursor.execute("""
+                INSERT INTO Entity (Type, Attack, Defense, Level, Speed, CurrentHP, TotalHP)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
+            """, ('E', atk, defe, lvl, spd, chp, thp))
+            entity_id = cursor.lastrowid
+
+            # Add to Enemy table
+            cursor.execute("""
+                INSERT INTO Enemy (EntityID, Name, IsBoss)
+                VALUES (?, ?, ?)
+            """, (entity_id, name, is_boss))
+
+        elif table == "Weapon":
+            desc = request.form.get('desc')
+            rank = request.form.get('rank')
+            type = request.form.get('type')
+            name = request.form.get('name')
+            special = request.form.get('special')
+            damage = request.form.get('damage')
+            atkspeed = request.form.get('atkspeed')
+            range = request.form.get('range')
+
+            cursor.execute("""
+                INSERT INTO Weapon (Description, Rank, Type, Name, SpecialATR, Damage, ATKSpeed, Range)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            """, (desc, rank, type, name, special, damage, atkspeed, range))
+
+        elif table == "Guild":
+            guild_name = request.form.get('guildName')
+            guild_bonus = request.form.get('guildBonus')
+
+            cursor.execute("""
+                INSERT INTO Guild (GuildName, GuildBonus, TotalPlayers)
+                VALUES (?, ?, ?)
+            """, (guild_name, guild_bonus, 0))
+
+        elif table == "Clan":
+            clan_name = request.form.get('clanName')
+            clan_bonus = request.form.get('clanBonus')
+            boss_name = request.form.get('bossName')
+
+            cursor.execute("""
+                INSERT INTO Clan (ClanName, ClanBonus, BossName)
+                VALUES (?, ?, ?)
+            """, (clan_name, clan_bonus, boss_name))
+
+        conn.commit()
+        conn.close()
+        return redirect(url_for('create_page'))
+
     return render_template('create.html')
+
+
+
+
+
 
 @app.route('/delete')
 def delete_page():
-    # conn = get_db_connection()
-    # cursor = conn.cursor()
-    # cursor.execute("DELETE FROM Player WHERE EntityID = ?", (player_id,))
-    # conn.commit()
-    # conn.close()
     return render_template('delete.html')
+
+
+
+
 
 @app.route('/update')
 def update_page():
     return render_template('update.html')
+
+
+
+
 
 if __name__ == '__main__':
     app.run(debug=True)
