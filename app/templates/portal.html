@@ -1,14 +1,14 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Admin Page</title>
+    <title>Dashboard</title>
     <link rel="stylesheet" href="../static/css/portal.css">
 </head>
 <body>
     <nav class="navbar">
-        <div class="navbar-brand">Admin Portal</div>
+        <div class="navbar-brand">Dashboard</div>
         <ul class="navbar-links">
-            <li><a href="{{ url_for('admin_page') }}">Dashboard</a></li>
+            <li class="selectedTab"><a href="{{ url_for('admin_page') }}">Dashboard</a></li>
             <li><a href="{{ url_for('create_page') }}">Create</a></li>
             <li><a href="{{ url_for('update_page') }}">Update</a></li>
             <li><a href="{{ url_for('delete_page') }}">Delete</a></li>
@@ -19,8 +19,8 @@
 
 
     <div class="content">
-        <h1>Welcome to the Admin Portal</h1>
-        <p>Manage your application from here.</p>
+        <h1>Welcome to the Dashboard</h1>
+        <p>Select how you would like to interact with the database using the tabs above.</p>
     </div>
 
 

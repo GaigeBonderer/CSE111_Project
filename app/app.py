@@ -4,15 +4,15 @@ import sqlite3
 app = Flask(__name__)
 app.secret_key = 'weapon'
 
-ADMIN_USERNAME = 'admin'
-ADMIN_PASSWORD = 'password'
+# ADMIN_USERNAME = 'admin'
+# ADMIN_PASSWORD = 'password'
 
 def get_db_connection():
     return sqlite3.connect('../GameDB.sqlite')
 
 @app.route('/')
 def home():
-    return "Welcome to the Flask App!"
+    return render_template('login.html')
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -67,7 +67,7 @@ def delete_page():
     # cursor.execute("DELETE FROM Player WHERE EntityID = ?", (player_id,))
     # conn.commit()
     # conn.close()
-    return redirect(url_for('delete.html'))
+    return render_template('delete.html')
 
 @app.route('/update')
 def update_page():

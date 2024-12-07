@@ -1,3 +1,4 @@
 document.getElementById("login-btn").addEventListener("click", () => {
-    alert("Go to Portal");
+    // Redirect to the portal page
+    window.location.href = "/portal";
 });

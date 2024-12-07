@@ -1,0 +1,55 @@
+body, ul {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+}
+
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #19b5e9;
+    padding: 10px 20px;
+    color: white;
+}
+
+.navbar-brand {
+    font-size: 1.5em;
+    font-weight: bold;
+}
+
+.navbar-links {
+    list-style: none;
+    display: flex;
+}
+
+.navbar-links li {
+    margin: 0 10px;
+}
+
+.navbar-links a {
+    color: white;
+    text-decoration: none;
+    padding: 5px 10px;
+    border-radius: 3px;
+}
+
+.navbar-links a:hover {
+    background-color: #fcf647;
+    color: black;
+    border-radius: 20px;
+}
+
+.selectedTab{
+    background-color: #1943e9;
+    border-radius: 20px;
+    color: white;
+}
+
+.content {
+    padding: 20px;
+}
