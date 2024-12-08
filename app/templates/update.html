@@ -17,6 +17,29 @@
         </ul>
     </nav>
 
+    <form id="update-form" method="POST" action="{{ url_for('update_page') }}">
+        <label for="update-select">Select Update Action:</label>
+        <select id="update-select" name="action" required>
+            <option value="">--Select--</option>
+            <option value="update_player">Update Player</option>
+            <option value="update_enemy">Update Enemy</option>
+            <option value="update_weapon">Update Weapon</option>
+            <option value="update_guild">Update Guild</option>
+            <option value="update_clan">Update Clan</option>
+            <option value="assign_player_guild">Assign Player to Guild</option>
+            <option value="assign_enemy_clan">Assign Enemy to Clan</option>
+            <option value="assign_weapon_equipped">Assign Equipped Weapon</option>
+            <option value="assign_weapon_inventory">Assign Weapon to Inventory</option>
+            <option value="assign_weapon_candrop">Assign Weapon to CanDrop</option>
+        </select>
+
+        <div id="form-fields">
+            <!-- Form fields dynamically populated here -->
+        </div>
+
+        <button type="submit">Submit</button>
+    </form>
+
     <script src="../static/js/update.js"></script>
 </body>
 </html>
