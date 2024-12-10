@@ -1,6 +1,8 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Read</title>
     <link rel="stylesheet" href="../static/css/read.css">
 </head>
@@ -17,6 +19,60 @@
         </ul>
     </nav>
 
+    <div class="read-container">
+        <form id="read-form" method="POST" action="{{ url_for('read_page') }}">
+            <label for="action">Select an option:</label>
+            <select id="action" name="action">
+                <option value="">--Select--</option>
+                <option value="all_players">All Players</option>
+                <option value="all_enemies">All Enemies</option>
+                <option value="all_guilds">All Guilds</option>
+                <option value="all_clans">All Clans</option>
+                <option value="all_weapons">All Weapons</option>
+                <option value="guild_members">All Guild Members</option>
+                <option value="clan_members">All Clan Members</option>
+                <option value="specific_entity">Specific Entity</option>
+                <option value="specific_weapon">Specific Weapon</option>
+                <option value="specific_guild">Specific Guild</option>
+                <option value="specific_clan">Specific Clan</option>
+                <option value="player_inventory">Player's Inventory</option>
+                <option value="enemy_can_drop">Enemy's Can Drop</option>
+                <option value="entity_equipped_weapon">Entity's Equipped Weapon</option>
+            </select>
+            <div id="form-fields">
+                <!-- Additional fields will appear here -->
+            </div>
+            <button type="submit">Submit</button>
+        </form>
+    
+        {% if data %}
+        <div class="data-output">
+            <h2>Results:</h2>
+            <table border="1">
+                <thead>
+                    <tr>
+                        {% for col_name in column_names %}
+                        <th>{{ col_name }}</th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in data %}
+                    <tr>
+                        {% for cell in row %}
+                        <td>{{ cell }}</td>
+                        {% endfor %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="no-data">
+            <p>No data found. Please select an option and submit.</p>
+        </div>
+        {% endif %}
+    </div>
     <script src="../static/js/read.js"></script>
 </body>
 </html>

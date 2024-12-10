@@ -41,13 +41,6 @@ def logout():
 
 
 
-@app.route('/read')
-def read_page():
-    return render_template('read.html')
-
-
-
-
 @app.route('/create', methods=['GET', 'POST'])
 def create_page():
     if request.method == 'POST':
@@ -609,6 +602,529 @@ def update_page():
 
 
 
+@app.route('/read', methods=['GET', 'POST'])
+def read_page():
+    column_names = []
+    data = []
+
+    if request.method == 'POST':
+        action = request.form.get('action')
+
+        conn = get_db_connection()
+        cursor = conn.cursor()
+
+        if action == "all_players":
+
+            print("all_players CALLED")
+
+            cursor.execute("""
+                SELECT 
+                    p.EntityID AS 'Entity ID',
+                    p.Username AS 'Username',
+                    p.Gender AS 'Gender',
+                    e.Level AS 'Level',
+                    e.Attack AS 'Attack',
+                    e.Defense AS 'Defense',
+                    e.Speed AS 'Speed',
+                    e.CurrentHP AS 'Current HP',
+                    e.TotalHP AS 'Total HP'
+                FROM 
+                    Player p
+                INNER JOIN 
+                    Entity e 
+                ON 
+                    p.EntityID = e.EntityID
+                ORDER BY 
+                    p.EntityID ASC
+            """)
+            column_names = [desc[0] for desc in cursor.description]
+            data = cursor.fetchall()
+
+            print(column_names)
+
+            conn.close()
+
+            # Render template with data and column names
+            return render_template('read.html', column_names=column_names, data=data)
+
+        elif action == "all_enemies":
+            conn = get_db_connection()
+            cursor = conn.cursor()
+
+            cursor.execute("""
+                SELECT 
+                    e.EntityID AS 'Entity ID',
+                    en.Name AS 'Name',
+                    e.Level AS 'Level',
+                    e.Attack AS 'Attack',
+                    e.Defense AS 'Defense',
+                    e.Speed AS 'Speed',
+                    e.CurrentHP AS 'Current HP',
+                    e.TotalHP AS 'Total HP',
+                    en.IsBoss AS 'Is Boss'
+                FROM 
+                    Enemy en
+                INNER JOIN 
+                    Entity e 
+                ON 
+                    en.EntityID = e.EntityID
+                ORDER BY 
+                    e.EntityID ASC
+            """)
+
+            # Fetch column names and data
+            column_names = [desc[0] for desc in cursor.description]
+            data = cursor.fetchall()
+
+            conn.close()
+
+            # Render template with data and column names
+            return render_template('read.html', column_names=column_names, data=data)
+
+        elif action == "all_guilds":
+            conn = get_db_connection()
+            cursor = conn.cursor()
+
+            cursor.execute("""
+                SELECT 
+                    GuildName AS 'Guild Name',
+                    GuildBonus AS 'Guild Bonus',
+                    TotalPlayers AS 'Total Players'
+                FROM 
+                    Guild
+                ORDER BY 
+                    TotalPlayers DESC
+            """)
+
+            # Fetch column names and data
+            column_names = [desc[0] for desc in cursor.description]
+            data = cursor.fetchall()
+
+            conn.close()
+
+            # Render template with data and column names
+            return render_template('read.html', column_names=column_names, data=data)
+        
+        elif action == "all_clans":
+            conn = get_db_connection()
+            cursor = conn.cursor()
+
+            cursor.execute("""
+                SELECT 
+                    ClanName AS 'Clan Name',
+                    ClanBonus AS 'Clan Bonus',
+                    BossName AS 'Boss Name'
+                FROM 
+                    Clan
+                ORDER BY 
+                    ClanName ASC
+            """)
+
+            # Fetch column names and data
+            column_names = [desc[0] for desc in cursor.description]
+            data = cursor.fetchall()
+
+            conn.close()
+
+            # Render template with data and column names
+            return render_template('read.html', column_names=column_names, data=data)
+
+        
+        elif action == "all_weapons":
+            conn = get_db_connection()
+            cursor = conn.cursor()
+
+            cursor.execute("""
+                SELECT 
+                    WeaponID AS 'Weapon ID',
+                    Name AS 'Name',
+                    Type AS 'Type',
+                    Rank AS 'Rank',
+                    Damage AS 'Damage',
+                    ATKSpeed AS 'Attack Speed',
+                    Range AS 'Range',
+                    SpecialATR AS 'Special Attribute',
+                    Description AS 'Description'
+                FROM 
+                    Weapon
+                ORDER BY 
+                    WeaponID ASC
+            """)
+
+            # Fetch column names and data
+            column_names = [desc[0] for desc in cursor.description]
+            data = cursor.fetchall()
+
+            conn.close()
+
+            # Render template with data and column names
+            return render_template('read.html', column_names=column_names, data=data)
+
+
+        elif action == "guild_members":
+            guild_name = request.form.get('guildName')
+
+            conn = get_db_connection()
+            cursor = conn.cursor()
+
+            cursor.execute("""
+                SELECT 
+                    pb.GuildName AS 'Guild Name',
+                    p.EntityID AS 'Entity ID',
+                    e.Level AS 'Level',
+                    e.Attack AS 'Attack',
+                    e.Defense AS 'Defense',
+                    e.Speed AS 'Speed',
+                    e.CurrentHP AS 'Current HP',
+                    e.TotalHP AS 'Total HP',
+                    p.Username AS 'Username',
+                    p.Gender AS 'Gender'
+                FROM 
+                    PlayerBelongs pb
+                INNER JOIN 
+                    Player p ON pb.EntityID = p.EntityID
+                INNER JOIN 
+                    Entity e ON p.EntityID = e.EntityID
+                WHERE 
+                    pb.GuildName = ?
+                ORDER BY 
+                    e.Level DESC
+            """, (guild_name,))
+
+            # Fetch column names and data
+            column_names = [desc[0] for desc in cursor.description]
+            data = cursor.fetchall()
+
+            conn.close()
+
+            # Render template with data and column names
+            return render_template('read.html', column_names=column_names, data=data)
+
+
+        elif action == "clan_members":
+            clan_name = request.form.get('clanName')
+
+            conn = get_db_connection()
+            cursor = conn.cursor()
+
+            cursor.execute("""
+                SELECT 
+                    c.ClanName AS 'Clan Name',
+                    e.Level AS 'Level',
+                    e.Attack AS 'Attack',
+                    e.Defense AS 'Defense',
+                    e.Speed AS 'Speed',
+                    e.CurrentHP AS 'Current HP',
+                    e.TotalHP AS 'Total HP',
+                    en.Name AS 'Enemy Name',
+                    en.IsBoss AS 'Is Boss'
+                FROM 
+                    Clan c
+                INNER JOIN 
+                    EnemyBelongs eb ON c.ClanName = eb.ClanName
+                INNER JOIN 
+                    Enemy en ON eb.EntityID = en.EntityID
+                INNER JOIN 
+                    Entity e ON en.EntityID = e.EntityID
+                WHERE 
+                    c.ClanName = ?
+                ORDER BY 
+                    e.Level DESC
+            """, (clan_name,))
+
+            # Fetch column names and data
+            column_names = [desc[0] for desc in cursor.description]
+            data = cursor.fetchall()
+
+            conn.close()
+
+            # Render template with data and column names
+            return render_template('read.html', column_names=column_names, data=data)
+
+
+        elif action == "specific_entity":
+
+            entity_id = request.form.get('entityID')
+
+            conn = get_db_connection()
+            cursor = conn.cursor()
+
+            # Determine entity type
+            cursor.execute("SELECT Type FROM Entity WHERE EntityID = ?", (entity_id,))
+            result = cursor.fetchone()
+
+            entity_type = result[0]
+
+            if entity_type == 'P':
+                cursor.execute("""
+                    SELECT 
+                        e.EntityID AS 'Entity ID',
+                        p.Username AS 'Username',
+                        e.Level AS 'Level',
+                        e.Attack AS 'Attack',
+                        e.Defense AS 'Defense',
+                        e.Speed AS 'Speed',
+                        e.CurrentHP AS 'Current HP',
+                        e.TotalHP AS 'Total HP',
+                        p.Gender AS 'Gender'
+                    FROM 
+                        Entity e
+                    INNER JOIN 
+                        Player p ON e.EntityID = p.EntityID
+                    WHERE 
+                        e.EntityID = ?
+                """, (entity_id,))
+
+
+            elif entity_type == 'E':
+                cursor.execute("""
+                    SELECT 
+                        e.EntityID AS 'Entity ID',
+                        en.Name AS 'Enemy Name',
+                        e.Level AS 'Level',
+                        e.Attack AS 'Attack',
+                        e.Defense AS 'Defense',
+                        e.Speed AS 'Speed',
+                        e.CurrentHP AS 'Current HP',
+                        e.TotalHP AS 'Total HP',
+                        en.IsBoss AS 'Is Boss'
+                    FROM 
+                        Entity e
+                    INNER JOIN 
+                        Enemy en ON e.EntityID = en.EntityID
+                    WHERE 
+                        e.EntityID = ?
+                """, (entity_id,))
+            else:
+                # Handle unexpected type
+                return render_template('read.html', column_names=[], data=[], error=f"Unexpected entity type for ID {entity_id}.")
+
+            # Fetch column names and data
+            column_names = [desc[0] for desc in cursor.description]
+            data = cursor.fetchall()
+
+            conn.close()
+
+            # Render template with data and column names
+            return render_template('read.html', column_names=column_names, data=data)
+
+
+        elif action == "specific_weapon":
+            weapon_id = request.form.get('weaponID')
+
+            conn = get_db_connection()
+            cursor = conn.cursor()
+
+            cursor.execute("""
+                SELECT 
+                    WeaponID AS 'Weapon ID',
+                    Name AS 'Weapon Name',
+                    Type AS 'Type',
+                    Rank AS 'Rank',
+                    Description AS 'Description',
+                    SpecialATR AS 'Special Attribute',
+                    Damage AS 'Damage',
+                    ATKSpeed AS 'Attack Speed',
+                    Range AS 'Range'
+                FROM 
+                    Weapon
+                WHERE 
+                    WeaponID = ?
+            """, (weapon_id,))
+
+            # Fetch column names and data
+            column_names = [desc[0] for desc in cursor.description]
+            data = cursor.fetchall()
+
+            conn.close()
+
+            # Render template with data and column names
+            return render_template('read.html', column_names=column_names, data=data)
+
+
+        elif action == "specific_guild":
+            guild_name = request.form.get('guildName')
+
+            conn = get_db_connection()
+            cursor = conn.cursor()
+
+            cursor.execute("""
+                SELECT 
+                    GuildName AS 'Guild Name',
+                    GuildBonus AS 'Guild Bonus',
+                    TotalPlayers AS 'Total Players'
+                FROM 
+                    Guild
+                WHERE 
+                    GuildName = ?
+            """, (guild_name,))
+
+            # Fetch column names and data
+            column_names = [desc[0] for desc in cursor.description]
+            data = cursor.fetchall()
+
+            conn.close()
+
+            # Render template with data and column names
+            return render_template('read.html', column_names=column_names, data=data)
+
+
+        elif action == "specific_clan":
+            clan_name = request.form.get('clanName')
+
+            conn = get_db_connection()
+            cursor = conn.cursor()
+
+            cursor.execute("""
+                SELECT 
+                    ClanName AS 'Clan Name',
+                    ClanBonus AS 'Clan Bonus',
+                    BossName AS 'Boss Name'
+                FROM 
+                    Clan
+                WHERE 
+                    ClanName = ?
+            """, (clan_name,))
+
+            # Fetch column names and data
+            column_names = [desc[0] for desc in cursor.description]
+            data = cursor.fetchall()
+
+            conn.close()
+
+            # Render template with data and column names
+            return render_template('read.html', column_names=column_names, data=data)
+
+
+        elif action == "player_inventory":
+            entity_id = request.form.get('entityID')
+
+            conn = get_db_connection()
+            cursor = conn.cursor()
+
+            cursor.execute("""
+                SELECT 
+                    p.Username AS 'Player Name',
+                    w.Name AS 'Weapon Name',
+                    w.Description AS 'Description',
+                    w.Rank AS 'Rarity',
+                    w.Type AS 'Type',
+                    w.SpecialATR AS 'Special Attribute',
+                    w.Damage AS 'Damage',
+                    w.ATKSpeed AS 'Attack Speed',
+                    w.Range AS 'Range'
+                FROM 
+                    Inventory i
+                INNER JOIN 
+                    Weapon w ON i.WeaponID = w.WeaponID
+                INNER JOIN 
+                    Player p ON i.EntityID = p.EntityID
+                WHERE 
+                    i.EntityID = ?
+                ORDER BY 
+                    w.Rank ASC
+            """, (entity_id,))
+
+            # Fetch column names and data
+            column_names = [desc[0] for desc in cursor.description]
+            data = cursor.fetchall()
+
+            conn.close()
+
+            # Render template with data and column names
+            return render_template('read.html', column_names=column_names, data=data)
+
+
+        elif action == "enemy_can_drop":
+            entity_id = request.form.get('entityID')
+
+            conn = get_db_connection()
+            cursor = conn.cursor()
+
+            cursor.execute("""
+                SELECT 
+                    e.Name AS 'Enemy Name',
+                    w.Name AS 'Weapon Name',
+                    w.Description AS 'Description',
+                    w.Rank AS 'Rarity',
+                    w.Type AS 'Type',
+                    w.SpecialATR AS 'Special Attribute',
+                    w.Damage AS 'Damage',
+                    w.ATKSpeed AS 'Attack Speed',
+                    w.Range AS 'Range'
+                FROM 
+                    CanDrop c
+                INNER JOIN 
+                    Weapon w ON c.WeaponID = w.WeaponID
+                INNER JOIN 
+                    Enemy e ON c.EntityID = e.EntityID
+                WHERE 
+                    c.EntityID = ?
+                ORDER BY 
+                    w.Rank ASC
+            """, (entity_id,))
+
+            # Fetch column names and data
+            column_names = [desc[0] for desc in cursor.description]
+            data = cursor.fetchall()
+
+            conn.close()
+
+            # Render template with data and column names
+            return render_template('read.html', column_names=column_names, data=data)
+
+
+        elif action == "entity_equipped_weapon":
+            entity_id = request.form.get('entityID')
+
+            conn = get_db_connection()
+            cursor = conn.cursor()
+
+            cursor.execute("""
+                SELECT 
+                    CASE 
+                        WHEN p.EntityID IS NOT NULL THEN p.Username
+                        WHEN e.EntityID IS NOT NULL THEN e.Name
+                        ELSE 'Unknown'
+                    END AS 'Entity Name',
+                    CASE 
+                        WHEN p.EntityID IS NOT NULL THEN 'Player'
+                        WHEN e.EntityID IS NOT NULL THEN 'Enemy'
+                        ELSE 'Unknown'
+                    END AS 'Entity Type',
+                    w.Name AS 'Weapon Name',
+                    w.Description AS 'Description',
+                    w.Rank AS 'Rarity',
+                    w.Type AS 'Type',
+                    w.SpecialATR AS 'Special Attribute',
+                    w.Damage AS 'Damage',
+                    w.ATKSpeed AS 'Attack Speed',
+                    w.Range AS 'Range'
+                FROM 
+                    Equipped eq
+                INNER JOIN 
+                    Weapon w ON eq.WeaponID = w.WeaponID
+                LEFT JOIN 
+                    Player p ON eq.EntityID = p.EntityID
+                LEFT JOIN 
+                    Enemy e ON eq.EntityID = e.EntityID
+                WHERE 
+                    eq.EntityID = ?
+            """, (entity_id,))
+
+            # Fetch column names and data
+            column_names = [desc[0] for desc in cursor.description]
+            data = cursor.fetchall()
+
+            conn.close()
+
+            # Render template with data and column names
+            return render_template('read.html', column_names=column_names, data=data)
+
+
+        return render_template('read.html', data=data)
+
+    return render_template('read.html', column_names=column_names, data=data)
 
 
 
