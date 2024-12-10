@@ -22,7 +22,7 @@
     <div class="delete-container">
         <form id="delete-form" method="POST" action="{{ url_for('delete_page') }}">
             <label for="action">What do you want to delete?</label>
-            <select id="action" name="action">
+            <select id="action" name="action" required>
                 <option value="">--Select--</option>
                 <option value="delete_player">Player</option>
                 <option value="delete_enemy">Enemy</option>
@@ -31,7 +31,9 @@
                 <option value="delete_weapon">Weapon</option>
             </select>
 
-            <div id="delete-fields"></div>
+            <div id="delete-fields">
+                <!-- Additional input fields will be dynamically populated here -->
+            </div>
 
             <button type="submit">Delete</button>
         </form>
@@ -40,3 +42,4 @@
     <script src="../static/js/delete.js"></script>
 </body>
 </html>
+

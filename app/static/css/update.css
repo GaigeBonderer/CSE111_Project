@@ -4,34 +4,29 @@ body, ul {
 }
 
 body {
-    /* font-family: Arial, sans-serif;
-    line-height: 1.6; */
     font-family: Arial, sans-serif;
     line-height: 1.6;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh; 
-    margin: 0; 
     background-color: #f4f4f4; 
+    margin: 0; 
+    padding-top: 60px;
 }
 
 .navbar {
-    /* display: flex;
-    justify-content: space-between;
-    align-items: center; */
-    /* background-color: #19b5e9; */
-    /* background-color: #1542e2;
-    padding: 10px 20px;
-    color: white; */
-    position: absolute; 
+    position: fixed;
     top: 0;
-    width: 100%; 
+    width: 100%;
     display: flex;
     justify-content: space-between;
     align-items: center;
     background-color: #1542e2;
     padding: 10px 20px;
+    color: white;
+    z-index: 1000;
+}
+
+.selectedTab {
+    background-color: #032d81;
+    border-radius: 20px;
     color: white;
 }
 
@@ -62,17 +57,6 @@ body {
     border-radius: 20px;
 }
 
-.selectedTab{
-    /* background-color: #1943e9; */
-    background-color: #032d81;
-    border-radius: 20px;
-    color: white;
-}
-
-/* .content {
-    padding: 20px;
-} */
-
 form {
     background: white;
     padding: 20px;
@@ -81,6 +65,7 @@ form {
     width: 90%; 
     max-width: 500px; 
     text-align: center; 
+    margin: 20px auto;
 }
 
 label {
