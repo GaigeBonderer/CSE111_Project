@@ -4,15 +4,33 @@ body, ul {
 }
 
 body {
+    /* font-family: Arial, sans-serif;
+    line-height: 1.6; */
     font-family: Arial, sans-serif;
     line-height: 1.6;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh; 
+    margin: 0; 
+    background-color: #f4f4f4; 
 }
 
 .navbar {
+    /* display: flex;
+    justify-content: space-between;
+    align-items: center; */
+    /* background-color: #19b5e9; */
+    /* background-color: #1542e2;
+    padding: 10px 20px;
+    color: white; */
+    position: absolute; 
+    top: 0;
+    width: 100%;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background-color: #19b5e9;
+    background-color: #1542e2;
     padding: 10px 20px;
     color: white;
 }
@@ -45,11 +63,48 @@ body {
 }
 
 .selectedTab{
-    background-color: #1943e9;
+    /* background-color: #1943e9; */
+    background-color: #032d81;
     border-radius: 20px;
     color: white;
 }
 
-.content {
+/* .content {
     padding: 20px;
+} */
+
+form {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    width: 90%; 
+    max-width: 500px; 
+    text-align: center; 
+}
+
+label {
+    display: block;
+    margin: 10px 0 5px;
+    font-weight: bold;
+}
+
+input, select, button {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+button {
+    background-color: #1542e2;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    border: none;
+}
+
+button:hover {
+    background-color: #032d81;
 }

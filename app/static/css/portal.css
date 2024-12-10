@@ -12,7 +12,8 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background-color: #19b5e9;
+    /* background-color: #19b5e9; */
+    background-color: #1542e2;
     padding: 10px 20px;
     color: white;
 }
@@ -45,7 +46,8 @@ body {
 }
 
 .selectedTab{
-    background-color: #1943e9;
+    /* background-color: #1943e9; */
+    background-color:  #032d81;;
     border-radius: 20px;
     color: white;
 }

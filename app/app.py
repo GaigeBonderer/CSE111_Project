@@ -583,14 +583,121 @@ def update_page():
             conn.commit()
 
 
-        # elif action == "assign_weapon_equipped":
-        #     # start here
+        
+        elif action == "assign_weapon_equipped":
+            entity_id = request.form.get('entityID')
+            weapon_id = request.form.get('weaponID')
 
-        # elif action == "assign_weapon_inventory":
-        #     # start here
+            conn = get_db_connection()
+            cursor = conn.cursor()
 
-        # elif action == "assign_weapon_candrop":
-            # start here
+            # checks if the entity exists
+            cursor.execute("""
+                SELECT EntityID 
+                FROM Entity 
+                WHERE EntityID = ?
+            """, (entity_id,))
+            entity_exists = cursor.fetchone()
+
+            # checks if the weapon exists
+            cursor.execute("""
+                SELECT WeaponID 
+                FROM Weapon 
+                WHERE WeaponID = ?
+            """, (weapon_id,))
+            weapon_exists = cursor.fetchone()
+
+            if not entity_exists:
+                conn.close()
+                return render_template('read.html', message=f"Entity with ID {entity_id} does not exist.", column_names=None, data=None)
+
+            if not weapon_exists:
+                conn.close()
+                return render_template('read.html', message=f"Weapon with ID {weapon_id} does not exist.", column_names=None, data=None)
+
+            #checks if the weapon is already equipped
+            cursor.execute("""
+                SELECT * 
+                FROM Equipped 
+                WHERE WeaponID = ?
+            """, (weapon_id,))
+            already_equipped = cursor.fetchone()
+
+            if already_equipped:
+                conn.close()
+                return render_template('read.html', message=f"Weapon with ID {weapon_id} is already equipped by another entity.", column_names=None, data=None)
+
+            # Assign weapon to entity
+            cursor.execute("""
+                INSERT INTO Equipped (EntityID, WeaponID)
+                VALUES (?, ?)
+            """, (entity_id, weapon_id))
+
+            conn.commit()
+            conn.close()
+
+            return render_template('read.html', message=f"Weapon with ID {weapon_id} successfully equipped to Entity with ID {entity_id}.", column_names=None, data=None)
+    
+
+        elif action == "assign_weapon_inventory":
+            entity_id = request.form.get('entityID')
+            weapon_id = request.form.get('weaponID')
+
+            conn = get_db_connection()
+            cursor = conn.cursor()
+
+            # checks if weapon is in entity's inventory
+            cursor.execute("""
+                SELECT 1 
+                FROM Inventory
+                WHERE EntityID = ? AND WeaponID = ?
+            """, (entity_id, weapon_id))
+            result = cursor.fetchone()
+
+            if result:
+                message = f"Weapon ID {weapon_id} is already in the inventory of Entity ID {entity_id}."
+            else:
+                cursor.execute("""
+                    INSERT INTO Inventory (EntityID, WeaponID)
+                    VALUES (?, ?)
+                """, (entity_id, weapon_id))
+                conn.commit()
+
+                message = f"Weapon ID {weapon_id} successfully added to the inventory of Entity ID {entity_id}."
+
+            conn.close()
+            return render_template('read.html', message=message)
+
+        
+
+        elif action == "assign_weapon_candrop":
+            entity_id = request.form.get('entityID')
+            weapon_id = request.form.get('weaponID')
+
+            conn = get_db_connection()
+            cursor = conn.cursor()
+
+            cursor.execute("""
+                SELECT 1 
+                FROM CanDrop
+                WHERE EntityID = ? AND WeaponID = ?
+            """, (entity_id, weapon_id))
+            result = cursor.fetchone()
+
+            if result:
+                message = f"Weapon ID {weapon_id} is already in the CanDrop list for Entity ID {entity_id}."
+            else:
+                cursor.execute("""
+                    INSERT INTO CanDrop (EntityID, WeaponID)
+                    VALUES (?, ?)
+                """, (entity_id, weapon_id))
+                conn.commit()
+                message = f"Weapon ID {weapon_id} successfully added to the CanDrop list for Entity ID {entity_id}."
+
+            conn.close()
+            return render_template('read.html', message=message)
+
+            
 
         
 

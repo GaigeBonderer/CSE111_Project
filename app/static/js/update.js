@@ -142,17 +142,33 @@ document.getElementById("update-select").addEventListener("change", function () 
             <label for="bossName">Boss Name (optional):</label>
             <input type="text" id="bossName" name="bossName">
         `;
+        // start here ig
     } else if (action === "assign_weapon_equipped") {
         formFields.innerHTML = `
             <label for="entityID">Entity ID:</label>
+            <input type="text" id="entityID" name="entityID" required>
+        
+            <label for="weaponID">Weapon ID:</label>
+            <input type="text" id="weaponID" name="weaponID" required>
+        
         `;
     } else if (action === "assign_weapon_inventory") {
         formFields.innerHTML = `
             <label for="entityID">Entity ID:</label>
+            <input type="text" id="entityID" name="entityID" required>
+        
+            <label for="weaponID">Weapon ID:</label>
+            <input type="text" id="weaponID" name="weaponID" required>
+        
         `;
     } else if (action === "assign_weapon_candrop") {
         formFields.innerHTML = `
             <label for="entityID">Entity ID:</label>
+            <input type="text" id="entityID" name="entityID" required>
+        
+            <label for="weaponID">Weapon ID:</label>
+            <input type="text" id="weaponID" name="weaponID" required>
+        
         `;
     }
 });
