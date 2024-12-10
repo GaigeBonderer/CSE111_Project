@@ -1,6 +1,8 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Delete</title>
     <link rel="stylesheet" href="../static/css/delete.css">
 </head>
@@ -16,6 +18,24 @@
             <li><a href="{{ url_for('logout') }}">Logout</a></li>
         </ul>
     </nav>
+
+    <div class="delete-container">
+        <form id="delete-form" method="POST" action="{{ url_for('delete_page') }}">
+            <label for="action">What do you want to delete?</label>
+            <select id="action" name="action">
+                <option value="">--Select--</option>
+                <option value="delete_player">Player</option>
+                <option value="delete_enemy">Enemy</option>
+                <option value="delete_clan">Clan</option>
+                <option value="delete_guild">Guild</option>
+                <option value="delete_weapon">Weapon</option>
+            </select>
+
+            <div id="delete-fields"></div>
+
+            <button type="submit">Delete</button>
+        </form>
+    </div>
 
     <script src="../static/js/delete.js"></script>
 </body>

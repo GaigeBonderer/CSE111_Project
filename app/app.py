@@ -151,9 +151,97 @@ def create_page():
 
 
 
-@app.route('/delete')
+@app.route('/delete', methods=['GET', 'POST'])
 def delete_page():
+    if request.method == 'POST':
+        action = request.form.get('action')
+        entity_id = request.form.get('entityID')
+        table_name = request.form.get('tableName')
+
+        conn = get_db_connection()
+        cursor = conn.cursor()
+
+        # Delete from respective table
+        if action == "delete_player":
+            entity_id = request.form.get('entityID')
+
+            # Fetch the player's guild (if any)
+            cursor.execute("""
+                SELECT GuildName FROM PlayerBelongs WHERE EntityID = ?
+            """, (entity_id,))
+            guild_name = cursor.fetchone()
+
+            # Delete from PlayerBelongs
+            cursor.execute("DELETE FROM PlayerBelongs WHERE EntityID = ?", (entity_id,))
+
+            # If the player in a guild -1 TotalPlayers
+            if guild_name:
+                cursor.execute("""
+                    UPDATE Guild
+                    SET TotalPlayers = TotalPlayers - 1
+                    WHERE GuildName = ?
+                """, (guild_name[0],))
+
+            # Delete from Equipped
+            cursor.execute("DELETE FROM Equipped WHERE EntityID = ?", (entity_id,))
+
+            # Delete from Inventory
+            cursor.execute("DELETE FROM Inventory WHERE EntityID = ?", (entity_id,))
+
+            # Delete from Player table
+            cursor.execute("DELETE FROM Player WHERE EntityID = ?", (entity_id,))
+
+            # Delete from Entity table
+            cursor.execute("DELETE FROM Entity WHERE EntityID = ?", (entity_id,))
+
+
+
+        elif action == "delete_enemy":
+            entity_id = request.form.get('entityID')
+
+            # Delete from EnemyBelongs
+            cursor.execute("DELETE FROM EnemyBelongs WHERE EntityID = ?", (entity_id,))
+
+            # Delete from CanDrop
+            cursor.execute("DELETE FROM CanDrop WHERE EntityID = ?", (entity_id,))
+
+            # Delete from Equipped
+            cursor.execute("DELETE FROM Equipped WHERE EntityID = ?", (entity_id,))
+
+            # Delete from Enemy table
+            cursor.execute("DELETE FROM Enemy WHERE EntityID = ?", (entity_id,))
+
+            # Delete from Entity table
+            cursor.execute("DELETE FROM Entity WHERE EntityID = ?", (entity_id,))
+
+            print(f"Enemy with EntityID {entity_id} and all related entries deleted.")
+
+
+        elif action == "delete_clan":
+            clan_name = request.form.get('clanName')
+            cursor.execute("DELETE FROM Clan WHERE ClanName = ?", (clan_name,))
+            cursor.execute("DELETE FROM EnemyBelongs WHERE ClanName = ?", (clan_name,))
+            print(f"Clan '{clan_name}' and related entries deleted.")
+
+        elif action == "delete_guild":
+            guild_name = request.form.get('guildName')
+            cursor.execute("DELETE FROM Guild WHERE GuildName = ?", (guild_name,))
+            cursor.execute("DELETE FROM PlayerBelongs WHERE GuildName = ?", (guild_name,))
+            print(f"Guild '{guild_name}' and related entries deleted.")
+
+        elif action == "delete_weapon":
+            weapon_id = request.form.get('weaponID')
+            cursor.execute("DELETE FROM Weapon WHERE WeaponID = ?", (weapon_id,))
+            cursor.execute("DELETE FROM Inventory WHERE WeaponID = ?", (weapon_id,))
+            cursor.execute("DELETE FROM Equipped WHERE WeaponID = ?", (weapon_id,))
+            cursor.execute("DELETE FROM CanDrop WHERE WeaponID = ?", (weapon_id,))
+            print(f"Weapon with WeaponID {weapon_id} and related entries deleted.")
+
+        conn.commit()
+        conn.close()
+
     return render_template('delete.html')
+
 
 
 

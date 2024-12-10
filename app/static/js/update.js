@@ -87,7 +87,7 @@ document.getElementById("update-select").addEventListener("change", function () 
     } else if (action === "update_weapon") {
         formFields.innerHTML = `
 
-            <label for="weaponID">Entity ID:</label>
+            <label for="weaponID">Weapon ID:</label>
             <input type="number" id="weaponID" name="weaponID" required>
 
             <label for="name">New Description (optional):</label>
