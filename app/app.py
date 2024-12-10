@@ -591,7 +591,6 @@ def update_page():
             conn = get_db_connection()
             cursor = conn.cursor()
 
-            # checks if the entity exists
             cursor.execute("""
                 SELECT EntityID 
                 FROM Entity 
@@ -599,7 +598,6 @@ def update_page():
             """, (entity_id,))
             entity_exists = cursor.fetchone()
 
-            # checks if the weapon exists
             cursor.execute("""
                 SELECT WeaponID 
                 FROM Weapon 
@@ -615,7 +613,6 @@ def update_page():
                 conn.close()
                 return render_template('read.html', message=f"Weapon with ID {weapon_id} does not exist.", column_names=None, data=None)
 
-            #checks if the weapon is already equipped
             cursor.execute("""
                 SELECT * 
                 FROM Equipped 
@@ -627,7 +624,19 @@ def update_page():
                 conn.close()
                 return render_template('read.html', message=f"Weapon with ID {weapon_id} is already equipped by another entity.", column_names=None, data=None)
 
-            # Assign weapon to entity
+            cursor.execute("""
+                SELECT WeaponID 
+                FROM Equipped 
+                WHERE EntityID = ?
+            """, (entity_id,))
+            currently_equipped = cursor.fetchone()
+
+            if currently_equipped:
+                cursor.execute("""
+                    DELETE FROM Equipped 
+                    WHERE EntityID = ?
+                """, (entity_id,))
+
             cursor.execute("""
                 INSERT INTO Equipped (EntityID, WeaponID)
                 VALUES (?, ?)
@@ -637,6 +646,7 @@ def update_page():
             conn.close()
 
             return render_template('read.html', message=f"Weapon with ID {weapon_id} successfully equipped to Entity with ID {entity_id}.", column_names=None, data=None)
+
     
 
         elif action == "assign_weapon_inventory":
@@ -1179,6 +1189,55 @@ def read_page():
 
             # Render template with data and column names
             return render_template('read.html', column_names=column_names, data=data)
+        
+
+        elif action == "entity_equipped_weapon":
+            entity_id = request.form.get('entityID')
+
+            conn = get_db_connection()
+            cursor = conn.cursor()
+
+            cursor.execute("""
+                SELECT 
+                    CASE 
+                        WHEN p.EntityID IS NOT NULL THEN p.Username
+                        WHEN e.EntityID IS NOT NULL THEN e.Name
+                        ELSE 'Unknown'
+                    END AS 'Entity Name',
+                    CASE 
+                        WHEN p.EntityID IS NOT NULL THEN 'Player'
+                        WHEN e.EntityID IS NOT NULL THEN 'Enemy'
+                        ELSE 'Unknown'
+                    END AS 'Entity Type',
+                    w.Name AS 'Weapon Name',
+                    w.Description AS 'Description',
+                    w.Rank AS 'Rarity',
+                    w.Type AS 'Type',
+                    w.SpecialATR AS 'Special Attribute',
+                    w.Damage AS 'Damage',
+                    w.ATKSpeed AS 'Attack Speed',
+                    w.Range AS 'Range'
+                FROM 
+                    Equipped eq
+                INNER JOIN 
+                    Weapon w ON eq.WeaponID = w.WeaponID
+                LEFT JOIN 
+                    Player p ON eq.EntityID = p.EntityID
+                LEFT JOIN 
+                    Enemy e ON eq.EntityID = e.EntityID
+                WHERE 
+                    eq.EntityID = ?
+            """, (entity_id,))
+
+            # Fetch column names and data
+            column_names = [desc[0] for desc in cursor.description]
+            data = cursor.fetchall()
+
+            conn.close()
+
+            # Render template with data and column names
+            return render_template('read.html', column_names=column_names, data=data)
+
 
 
         elif action == "weapon_type_avg":
