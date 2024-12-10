@@ -1074,43 +1074,26 @@ def read_page():
             return render_template('read.html', column_names=column_names, data=data)
 
 
-        elif action == "entity_equipped_weapon":
-            entity_id = request.form.get('entityID')
-
+        elif action == "weapon_type_avg":
             conn = get_db_connection()
             cursor = conn.cursor()
 
             cursor.execute("""
                 SELECT 
-                    CASE 
-                        WHEN p.EntityID IS NOT NULL THEN p.Username
-                        WHEN e.EntityID IS NOT NULL THEN e.Name
-                        ELSE 'Unknown'
-                    END AS 'Entity Name',
-                    CASE 
-                        WHEN p.EntityID IS NOT NULL THEN 'Player'
-                        WHEN e.EntityID IS NOT NULL THEN 'Enemy'
-                        ELSE 'Unknown'
-                    END AS 'Entity Type',
-                    w.Name AS 'Weapon Name',
-                    w.Description AS 'Description',
-                    w.Rank AS 'Rarity',
-                    w.Type AS 'Type',
-                    w.SpecialATR AS 'Special Attribute',
-                    w.Damage AS 'Damage',
-                    w.ATKSpeed AS 'Attack Speed',
-                    w.Range AS 'Range'
+                    Type AS 'Weapon Type',
+                    ROUND(AVG(Damage), 1) AS 'Average Damage',
+                    ROUND(AVG(ATKSpeed), 1) AS 'Average Attack Speed',
+                    ROUND(AVG(Range), 1) AS 'Average Range',
+                    ROUND((AVG(Damage) + AVG(ATKSpeed) + AVG(Range)), 1) AS 'Average Total'
                 FROM 
-                    Equipped eq
-                INNER JOIN 
-                    Weapon w ON eq.WeaponID = w.WeaponID
-                LEFT JOIN 
-                    Player p ON eq.EntityID = p.EntityID
-                LEFT JOIN 
-                    Enemy e ON eq.EntityID = e.EntityID
+                    Weapon
                 WHERE 
-                    eq.EntityID = ?
-            """, (entity_id,))
+                    Rank = 'Common'
+                GROUP BY 
+                    Type
+                ORDER BY 
+                    ROUND((AVG(Damage) + AVG(ATKSpeed) + AVG(Range)), 1) ASC
+            """)
 
             # Fetch column names and data
             column_names = [desc[0] for desc in cursor.description]
@@ -1120,6 +1103,8 @@ def read_page():
 
             # Render template with data and column names
             return render_template('read.html', column_names=column_names, data=data)
+
+
 
 
         return render_template('read.html', data=data)
