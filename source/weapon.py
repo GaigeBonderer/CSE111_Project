@@ -1,39 +1,46 @@
 import sqlite3
 import random
-from db_init import create_tables
-from drop_tables import (drop_player, drop_entity, drop_enemy, drop_weapon,
-                         drop_guild, drop_clan, drop_inventory, drop_equipped,
-                         drop_can_drop, drop_player_belongs, drop_enemy_belongs,
-                         drop_all)
+from db_init import create_tables  # Handles database table creation
+from drop_tables import (          # Handles dropping database tables
+    drop_player, drop_entity, drop_enemy, drop_weapon,
+    drop_guild, drop_clan, drop_inventory, drop_equipped,
+    drop_can_drop, drop_player_belongs, drop_enemy_belongs,
+    drop_all
+)
 
+# Weapon types, ranks, and attributes for generating random weapons
 weapon_types = ["Sword", "Spear", "Bow", "Dagger", "Mace",
-                 "Musket", "Axe", "Hammer", "Claymore", "Flail"]
+                "Musket", "Axe", "Hammer", "Claymore", "Flail"]
 
 weapon_ranks = ["Common", "Rare", "Epic", "Legendary", "Mystic"]
 
 descriptors = ["Shadow", "Blood", "Storm", "Frost", "Inferno",
-                "Thunder", "Ancient", "Divine", "Dark", "Eternal",
-                "Ginourmous", "Tiny", "Icarus's", "All Knowing", "Infinite",
-                "Steel", "Ice Giant", "Glory", "False God", "Demon"]
+               "Thunder", "Ancient", "Divine", "Dark", "Eternal",
+               "Ginourmous", "Tiny", "Icarus's", "All Knowing", "Infinite",
+               "Steel", "Ice Giant", "Glory", "False God", "Demon"]
 
 main_names = ["Slayer", "Piercer", "Breaker", "Defender", "Hunter",
-               "Warden", "Bane", "Rage", "Crusher", "Ripper",
-               "Slaying", "Gutting", "Cutting", "Ripping", "Omnipotent",
-               "Dripper", "Dripping", "Crushing", "Defending", "Hunting"]
+              "Warden", "Bane", "Rage", "Crusher", "Ripper",
+              "Slaying", "Gutting", "Cutting", "Ripping", "Omnipotent",
+              "Dripper", "Dripping", "Crushing", "Defending", "Hunting"]
 
-weapon_attributes = ["Poinsoned Edge: 1/8 chance to poison per hit",
-                      "Bone Breaker: 1/8 chance to cripple foe per hit",
-                        "Dragon Enchanted: 1/8 chance to ignite foe per hit",
-                          "Golem's Favor: 1/8 chance to generate 250 gold per hit",
-                            "Icarus's Blessing: 1/8 chance to heal player 25 hp per hit"]
+weapon_attributes = [
+    "Poisoned Edge: 1/8 chance to poison per hit",
+    "Bone Breaker: 1/8 chance to cripple foe per hit",
+    "Dragon Enchanted: 1/8 chance to ignite foe per hit",
+    "Golem's Favor: 1/8 chance to generate 250 gold per hit",
+    "Icarus's Blessing: 1/8 chance to heal player 25 hp per hit"
+]
 
 def get_db_connection():
+    #Establish and return a connection to the SQLite database
     return sqlite3.connect('../GameDB.sqlite')
 
 # ///////////////////////////////////////////////////////////////////////////////////////////
 
 def generate_weapon_stats(weapon_type, rank):
-    # Base values for each rank level (adjust as needed)
+    #Generate weapon stats (damage, attack speed, range) based on type and rank
+    # Multipliers for weapon stats based on rank
     rank_multipliers = {
         "Common": 1,
         "Rare": 2,
@@ -42,7 +49,7 @@ def generate_weapon_stats(weapon_type, rank):
         "Mystic": 6
     }
 
-
+    # Base stat ranges for each weapon type
     type_stats = {
         "Sword": {"Damage": (10, 20), "ATKSpeed": (15, 20), "Range": (1, 2)},
         "Spear": {"Damage": (12, 22), "ATKSpeed": (10, 15), "Range": (3, 4)},
@@ -56,11 +63,10 @@ def generate_weapon_stats(weapon_type, rank):
         "Flail": {"Damage": (12, 18), "ATKSpeed": (8, 12), "Range": (1, 2)}
     }
 
-
     base_stats = type_stats[weapon_type]
-
     multiplier = rank_multipliers[rank]
 
+    # Calculate stats using random values within base ranges, scaled by rank multiplier
     damage = int(random.randint(*base_stats["Damage"]) * multiplier)
     atk_speed = int(random.randint(*base_stats["ATKSpeed"]) * multiplier)
     range_stat = int(random.randint(*base_stats["Range"]) * multiplier)
@@ -70,48 +76,47 @@ def generate_weapon_stats(weapon_type, rank):
 # ///////////////////////////////////////////////////////////////////////////////////////////
 
 def populate_weapon():
+    #Generate and insert a random weapon into the database
     conn = get_db_connection()
     cursor = conn.cursor()
 
-    weapon_type = random.choice(weapon_types)
+    weapon_type = random.choice(weapon_types)  # Randomly select a weapon type
 
+    # Determine weapon rank based on probability
     rank_prob = random.randint(0, 100)
-
     if rank_prob < 40:
         rank = "Common"
-    elif rank_prob >= 40 and rank_prob < 70:
+    elif rank_prob < 70:
         rank = "Rare"
-    elif rank_prob >= 70 and rank_prob < 90:
+    elif rank_prob < 90:
         rank = "Epic"
-    elif rank_prob >= 90 and rank_prob < 100:
+    elif rank_prob < 100:
         rank = "Legendary"
     else:
         rank = "Mystic"
 
-    descriptor = random.choice(descriptors)
+    descriptor = random.choice(descriptors)  # Random descriptor
+    main_name = random.choice(main_names)    # Random main name
+    name = f"{rank} {descriptor} {main_name} {weapon_type}"  # Generate weapon name
 
-    main_name = random.choice(main_names)
-
-    name = f"{rank} {descriptor} {main_name} {weapon_type}"
-
+    # Generate weapon stats
     damage, atk_speed, range_stat = generate_weapon_stats(weapon_type, rank)
 
+    # Assign a description based on rank
     if rank == "Common":
         description = "Common weapon used by peasants."
     elif rank == "Rare":
-        description = "Well forged weapon, adequate for the battlefield."
+        description = "Well-forged weapon, adequate for the battlefield."
     elif rank == "Epic":
-        description = "Master forged weapon, used my commanders and great warriors."
+        description = "Master-forged weapon, used by commanders and great warriors."
     elif rank == "Legendary":
-        description = "You should gift this weapon to the king, it was once used by a warrior of legend."
+        description = "You should gift this weapon to the king; it was once used by a warrior of legend."
     else:
         description = "You should not have this... it once belonged to a god."
 
-    atr_prob = random.randint(0,100)
-
-    if rank == "Common":
-        special_atr = "None"
-    elif rank == "Rare":
+    # Determine special attribute based on rank
+    atr_prob = random.randint(0, 100)
+    if rank in ["Common", "Rare"]:
         special_atr = "None"
     elif rank == "Epic" and atr_prob > 90:
         special_atr = random.choice(weapon_attributes)
@@ -122,6 +127,7 @@ def populate_weapon():
     else:
         special_atr = "None"
 
+    # Insert the weapon into the database
     cursor.execute("""
         INSERT INTO Weapon (Description, Rank, Type, Name, SpecialATR, Damage, ATKSpeed, Range)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?)
@@ -135,14 +141,14 @@ def populate_weapon():
 # ///////////////////////////////////////////////////////////////////////////////////////////
 
 if __name__ == "__main__":
+    create_tables()  # Ensure database tables exist
 
-    create_tables()
-
-    NumToGenerate = 10000
+    NumToGenerate = 10000  # Number of weapons to generate
     for _ in range(NumToGenerate):
         populate_weapon()
 
     print("Generated", NumToGenerate, "weapons.")
+
 
     # Drop tables (Uncomment as needed)
     # drop_player()

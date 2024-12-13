@@ -7,33 +7,33 @@ app.secret_key = 'weapon'
 
 
 def get_db_connection():
-    return sqlite3.connect('../GameDB.sqlite')
+    return sqlite3.connect('../GameDB.sqlite') # Establishes connection to database
 
 
 
 
 @app.route('/')
 def home():
-    return render_template('login.html')
+    return render_template('login.html') # Defines route to first page to load
 
 
 
 
-@app.route('/login', methods=['GET', 'POST'])
+@app.route('/login', methods=['GET', 'POST']) # Login Route
 def login():
     return render_template('login.html')
 
 
 
 
-@app.route('/portal')
+@app.route('/portal') # Routes to dashboard
 def admin_page():
     return render_template('portal.html')
 
 
 
 
-@app.route('/logout')
+@app.route('/logout') # Logout Route
 def logout():
     session.pop('admin', None)
     return redirect(url_for('login'))
@@ -41,100 +41,108 @@ def logout():
 
 
 
-@app.route('/create', methods=['GET', 'POST'])
+@app.route('/create', methods=['GET', 'POST'])  # Route for the Create page
 def create_page():
-    if request.method == 'POST':
-        table = request.form.get('table')
+    if request.method == 'POST':  # Handle form submission via POST method
+        table = request.form.get('table')  # Retrieve the target table from the form.
 
+        # Establish a connection to the database
         conn = get_db_connection()
         cursor = conn.cursor()
 
         if table == "Player":
+            # Retrieve player-specific form data.
             username = request.form.get('username')
             gender = request.form.get('gender')
 
-            # type = request.form.get('type')
-            atk = request.form.get('atk')
-            defe = request.form.get('defe')
-            lvl = request.form.get('lvl')
-            spd = request.form.get('spd')
-            chp = request.form.get('chp')
-            thp = request.form.get('thp')
+            atk = request.form.get('atk')  # Obtain Attack stat
+            defe = request.form.get('defe')  # Obtain Defense stat
+            lvl = request.form.get('lvl')  # Obtain Level
+            spd = request.form.get('spd')  # Obtain Speed stat.
+            chp = request.form.get('chp')  # Obtain Current health points
+            thp = request.form.get('thp')  # Obtain Total health points
 
-            # Add to Entity table
+            # Insert player data into the Entity table
             cursor.execute("""
                 INSERT INTO Entity (Type, Attack, Defense, Level, Speed, CurrentHP, TotalHP)
                 VALUES (?, ?, ?, ?, ?, ?, ?)
             """, ('P', atk, defe, lvl, spd, chp, thp))
-            entity_id = cursor.lastrowid
+            entity_id = cursor.lastrowid  # Retrieve the ID of inserted entity
 
-            # Add to Player table
+            # Insert player-specific data into the Player table
             cursor.execute("""
                 INSERT INTO Player (EntityID, Gender, Username)
                 VALUES (?, ?, ?)
             """, (entity_id, gender, username))
 
         elif table == "Enemy":
-            name = request.form.get('name')
-            is_boss = request.form.get('isBoss')
+            # Retrieve enemy-specific form data
+            name = request.form.get('name')  # Obtain Enemy name.
+            is_boss = request.form.get('isBoss')  # Obtain Whether the enemy is a boss
 
-            # type = request.form.get('type')
-            atk = request.form.get('atk')
-            defe = request.form.get('defe')
-            lvl = request.form.get('lvl')
-            spd = request.form.get('spd')
-            chp = request.form.get('chp')
-            thp = request.form.get('thp')
+            atk = request.form.get('atk')  # Obtain Attack stat
+            defe = request.form.get('defe')  # Obtain Defense stat
+            lvl = request.form.get('lvl')  # Obtain Level
+            spd = request.form.get('spd')  # Obtain Speed stat
+            chp = request.form.get('chp')  # Obtain Current health ponts
+            thp = request.form.get('thp')  # Obtain Total health points
 
-            # Add to Entity table
+            # Insert enemy data into the Entity table
             cursor.execute("""
                 INSERT INTO Entity (Type, Attack, Defense, Level, Speed, CurrentHP, TotalHP)
                 VALUES (?, ?, ?, ?, ?, ?, ?)
             """, ('E', atk, defe, lvl, spd, chp, thp))
-            entity_id = cursor.lastrowid
+            entity_id = cursor.lastrowid  # Retrieve the ID of the inserted entity
 
-            # Add to Enemy table
+            # Insert enemy-specific data into the Enemy table
             cursor.execute("""
                 INSERT INTO Enemy (EntityID, Name, IsBoss)
                 VALUES (?, ?, ?)
             """, (entity_id, name, is_boss))
 
         elif table == "Weapon":
-            desc = request.form.get('desc')
-            rank = request.form.get('rank')
-            type = request.form.get('type')
-            name = request.form.get('name')
-            special = request.form.get('special')
-            damage = request.form.get('damage')
-            atkspeed = request.form.get('atkspeed')
-            range = request.form.get('range')
+            # Retrieve weapon-specific form data
+            desc = request.form.get('desc')  # Obtain Weapon description
+            rank = request.form.get('rank')  # Obtain Weapon rank
+            type = request.form.get('type')  # Obtain Weapon type
+            name = request.form.get('name')  # Obtain Weapon name
+            special = request.form.get('special')  # Obtain Special attribute
+            damage = request.form.get('damage')  # Obtain Damage stat
+            atkspeed = request.form.get('atkspeed')  # Obtain Attack speed
+            range = request.form.get('range')  # Obtain Weapon range
 
+            # Insert weapon data into the Weapon table
             cursor.execute("""
                 INSERT INTO Weapon (Description, Rank, Type, Name, SpecialATR, Damage, ATKSpeed, Range)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?)
             """, (desc, rank, type, name, special, damage, atkspeed, range))
 
         elif table == "Guild":
-            guild_name = request.form.get('guildName')
-            guild_bonus = request.form.get('guildBonus')
+            # Retrieve guild-specific form data
+            guild_name = request.form.get('guildName')  # Obtain Guild name
+            guild_bonus = request.form.get('guildBonus')  # Obtain Guild bonus attribute
 
+            # Insert guild data into Guild table
             cursor.execute("""
                 INSERT INTO Guild (GuildName, GuildBonus, TotalPlayers)
                 VALUES (?, ?, ?)
-            """, (guild_name, guild_bonus, 0))
+            """, (guild_name, guild_bonus, 0))  # Initial total players set to 0
 
         elif table == "Clan":
-            clan_name = request.form.get('clanName')
-            clan_bonus = request.form.get('clanBonus')
-            boss_name = request.form.get('bossName')
+            # Retrieve clan-specific form data
+            clan_name = request.form.get('clanName')  # Obtain Clan name
+            clan_bonus = request.form.get('clanBonus')  # Obtain Clan bonus attribute
+            boss_name = request.form.get('bossName')  # Obtain Name of the clan's boss
 
+            # Insert clan data into the Clan table
             cursor.execute("""
                 INSERT INTO Clan (ClanName, ClanBonus, BossName)
                 VALUES (?, ?, ?)
             """, (clan_name, clan_bonus, boss_name))
 
+        # Commit all the database transactions to save changes
         conn.commit()
-        conn.close()
+        conn.close()  # Close the database connection.
         return redirect(url_for('create_page'))
 
     return render_template('create.html')
@@ -144,30 +152,34 @@ def create_page():
 
 
 
+
 @app.route('/delete', methods=['GET', 'POST'])
 def delete_page():
+
     if request.method == 'POST':
+        # Retrieve action type, entity ID, and table name from the form
         action = request.form.get('action')
         entity_id = request.form.get('entityID')
         table_name = request.form.get('tableName')
 
+        # Establish database connection
         conn = get_db_connection()
         cursor = conn.cursor()
 
-        # Delete from respective table
+        # Handle deletion of a player
         if action == "delete_player":
             entity_id = request.form.get('entityID')
 
-            # Fetch the player's guild (if any)
+            # Fetch the player's guild association, if any
             cursor.execute("""
                 SELECT GuildName FROM PlayerBelongs WHERE EntityID = ?
             """, (entity_id,))
             guild_name = cursor.fetchone()
 
-            # Delete from PlayerBelongs
+            # Remove player-guild association
             cursor.execute("DELETE FROM PlayerBelongs WHERE EntityID = ?", (entity_id,))
 
-            # If the player in a guild -1 TotalPlayers
+            # Decrease guild player count if player belongs to a guild
             if guild_name:
                 cursor.execute("""
                     UPDATE Guild
@@ -175,65 +187,60 @@ def delete_page():
                     WHERE GuildName = ?
                 """, (guild_name[0],))
 
-            # Delete from Equipped
+            # Remove player's equipped items, inventory, and the player entry
             cursor.execute("DELETE FROM Equipped WHERE EntityID = ?", (entity_id,))
-
-            # Delete from Inventory
             cursor.execute("DELETE FROM Inventory WHERE EntityID = ?", (entity_id,))
-
-            # Delete from Player table
             cursor.execute("DELETE FROM Player WHERE EntityID = ?", (entity_id,))
-
-            # Delete from Entity table
             cursor.execute("DELETE FROM Entity WHERE EntityID = ?", (entity_id,))
 
-
-
+        # Handle deletion of an enemy
         elif action == "delete_enemy":
             entity_id = request.form.get('entityID')
 
-            # Delete from EnemyBelongs
+            # Remove enemy-clan association, Can Drop entires, and the enemy entry
             cursor.execute("DELETE FROM EnemyBelongs WHERE EntityID = ?", (entity_id,))
-
-            # Delete from CanDrop
             cursor.execute("DELETE FROM CanDrop WHERE EntityID = ?", (entity_id,))
-
-            # Delete from Equipped
             cursor.execute("DELETE FROM Equipped WHERE EntityID = ?", (entity_id,))
-
-            # Delete from Enemy table
             cursor.execute("DELETE FROM Enemy WHERE EntityID = ?", (entity_id,))
-
-            # Delete from Entity table
             cursor.execute("DELETE FROM Entity WHERE EntityID = ?", (entity_id,))
-
             print(f"Enemy with EntityID {entity_id} and all related entries deleted.")
 
-
+        # Handle deletion of a clan
         elif action == "delete_clan":
             clan_name = request.form.get('clanName')
+
+            # Remove the clan and all associated enemy entries
             cursor.execute("DELETE FROM Clan WHERE ClanName = ?", (clan_name,))
             cursor.execute("DELETE FROM EnemyBelongs WHERE ClanName = ?", (clan_name,))
             print(f"Clan '{clan_name}' and related entries deleted.")
 
+        # Handle deletion of a guild
         elif action == "delete_guild":
             guild_name = request.form.get('guildName')
+
+            # Remove the guild and all associated player entries
             cursor.execute("DELETE FROM Guild WHERE GuildName = ?", (guild_name,))
             cursor.execute("DELETE FROM PlayerBelongs WHERE GuildName = ?", (guild_name,))
             print(f"Guild '{guild_name}' and related entries deleted.")
 
+        # Handle deletion of a weapon
         elif action == "delete_weapon":
             weapon_id = request.form.get('weaponID')
+
+            # Remove the weapon and all references in inventory, equipped, and droppable items
             cursor.execute("DELETE FROM Weapon WHERE WeaponID = ?", (weapon_id,))
             cursor.execute("DELETE FROM Inventory WHERE WeaponID = ?", (weapon_id,))
             cursor.execute("DELETE FROM Equipped WHERE WeaponID = ?", (weapon_id,))
             cursor.execute("DELETE FROM CanDrop WHERE WeaponID = ?", (weapon_id,))
             print(f"Weapon with WeaponID {weapon_id} and related entries deleted.")
 
+        # Commit all changes to the database and close the connection
         conn.commit()
         conn.close()
 
+    # Render the deletion page template
     return render_template('delete.html')
+
 
 
 
@@ -242,15 +249,16 @@ def delete_page():
 
 @app.route('/update', methods=['GET', 'POST'])
 def update_page():
+    # Handle updates via POST request
     if request.method == 'POST':
-        action = request.form.get('action')
-        conn = get_db_connection()
+        action = request.form.get('action')  # Get the action type
+        conn = get_db_connection()  # Establish database connection
         cursor = conn.cursor()
 
         if action == "update_player":
-            entity_id = request.form.get('entityID')
+            entity_id = request.form.get('entityID')  # Get the player ID
             
-            # Entity attributes
+            # Attributes for the Entity table
             atk = request.form.get('atk')
             defe = request.form.get('defe')
             lvl = request.form.get('lvl')
@@ -258,14 +266,13 @@ def update_page():
             chp = request.form.get('chp')
             thp = request.form.get('thp')
             
-            # Player-specific attributes
+            # Attributes for the Player table
             username = request.form.get('username')
             gender = request.form.get('gender')
 
-            # Build dynamic query for Entity table
+            # Prepare dynamic update query for Entity table
             entity_update_fields = []
             entity_update_values = []
-
             if atk:
                 entity_update_fields.append("Attack = ?")
                 entity_update_values.append(atk)
@@ -284,7 +291,6 @@ def update_page():
             if thp:
                 entity_update_fields.append("TotalHP = ?")
                 entity_update_values.append(thp)
-
             if entity_update_fields:
                 entity_update_values.append(entity_id)
                 entity_update_query = f"""
@@ -294,17 +300,15 @@ def update_page():
                 """
                 cursor.execute(entity_update_query, tuple(entity_update_values))
 
-            # Build dynamic query for Player table
+            # Prepare dynamic update query for Player table
             player_update_fields = []
             player_update_values = []
-
             if username:
                 player_update_fields.append("Username = ?")
                 player_update_values.append(username)
             if gender:
                 player_update_fields.append("Gender = ?")
                 player_update_values.append(gender)
-
             if player_update_fields:
                 player_update_values.append(entity_id)
                 player_update_query = f"""
@@ -314,12 +318,12 @@ def update_page():
                 """
                 cursor.execute(player_update_query, tuple(player_update_values))
 
-            conn.commit()
+            conn.commit()  # Commit changes to the database
 
         elif action == "update_enemy":
-            entity_id = request.form.get('entityID')
+            entity_id = request.form.get('entityID')  # Get the enemy ID
             
-            # Entity attributes
+            # Attributes for the Entity table
             atk = request.form.get('atk')
             defe = request.form.get('defe')
             lvl = request.form.get('lvl')
@@ -327,14 +331,13 @@ def update_page():
             chp = request.form.get('chp')
             thp = request.form.get('thp')
             
-            # Enemy-specific attributes
+            # Attributes for the Enemy table
             name = request.form.get('name')
             is_boss = request.form.get('isBoss')
 
-            # Build dynamic query for Entity table
+            # Prepare dynamic update query for Entity table
             entity_update_fields = []
             entity_update_values = []
-
             if atk:
                 entity_update_fields.append("Attack = ?")
                 entity_update_values.append(atk)
@@ -353,7 +356,6 @@ def update_page():
             if thp:
                 entity_update_fields.append("TotalHP = ?")
                 entity_update_values.append(thp)
-
             if entity_update_fields:
                 entity_update_values.append(entity_id)
                 entity_update_query = f"""
@@ -363,17 +365,15 @@ def update_page():
                 """
                 cursor.execute(entity_update_query, tuple(entity_update_values))
 
-            # Build dynamic query for Enemy table
+            # Prepare dynamic update query for Enemy table
             enemy_update_fields = []
             enemy_update_values = []
-
             if name:
                 enemy_update_fields.append("Name = ?")
                 enemy_update_values.append(name)
             if is_boss:
                 enemy_update_fields.append("IsBoss = ?")
                 enemy_update_values.append(is_boss)
-
             if enemy_update_fields:
                 enemy_update_values.append(entity_id)
                 enemy_update_query = f"""
@@ -383,13 +383,13 @@ def update_page():
                 """
                 cursor.execute(enemy_update_query, tuple(enemy_update_values))
 
-            conn.commit()
+            conn.commit()  # Commit changes to the database
 
         elif action == "assign_player_guild":
-            entity_id = request.form.get('entityID')
-            new_guild_name = request.form.get('guildName')
+            entity_id = request.form.get('entityID')  # Get player ID
+            new_guild_name = request.form.get('guildName')  # New guild assignment
 
-            # Check if Player is already in a guild
+            # Check current guild association for the player
             cursor.execute("""
                 SELECT GuildName
                 FROM PlayerBelongs
@@ -397,7 +397,7 @@ def update_page():
             """, (entity_id,))
             current_guild = cursor.fetchone()
 
-            # If in another guild decrease total player count
+            # Remove from current guild if assigned
             if current_guild:
                 previous_guild_name = current_guild[0]
                 cursor.execute("""
@@ -405,20 +405,16 @@ def update_page():
                     SET TotalPlayers = TotalPlayers - 1
                     WHERE GuildName = ?
                 """, (previous_guild_name,))
-
-                # Delete player belongs for previous guild
                 cursor.execute("""
                     DELETE FROM PlayerBelongs
                     WHERE EntityID = ? AND GuildName = ?
                 """, (entity_id, previous_guild_name))
 
-            # Assign player to new guild
+            # Assign to new guild
             cursor.execute("""
                 INSERT OR REPLACE INTO PlayerBelongs (EntityID, GuildName)
                 VALUES (?, ?)
             """, (entity_id, new_guild_name))
-
-            # Increase total player count for new guild
             cursor.execute("""
                 UPDATE Guild
                 SET TotalPlayers = TotalPlayers + 1
@@ -426,9 +422,10 @@ def update_page():
             """, (new_guild_name,))
 
         elif action == "assign_enemy_clan":
-            entity_id = request.form.get('entityID')
-            new_clan_name = request.form.get('clanName')
+            entity_id = request.form.get('entityID')  # Get enemy ID
+            new_clan_name = request.form.get('clanName')  # New clan assignment
 
+            # Check current clan association for the enemy
             cursor.execute("""
                 SELECT ClanName
                 FROM EnemyBelongs
@@ -436,6 +433,7 @@ def update_page():
             """, (entity_id,))
             current_clan = cursor.fetchone()
 
+            # Remove from current clan if different
             if current_clan:
                 current_clan_name = current_clan[0]
                 if current_clan_name != new_clan_name:
@@ -443,18 +441,19 @@ def update_page():
                         DELETE FROM EnemyBelongs
                         WHERE EntityID = ? AND ClanName = ?
                     """, (entity_id, current_clan_name))
-                    print(f"Removed Entity {entity_id} from Clan {current_clan_name}")
 
+            # Assign to new clan
             cursor.execute("""
                 INSERT OR REPLACE INTO EnemyBelongs (EntityID, ClanName)
                 VALUES (?, ?)
             """, (entity_id, new_clan_name))
-            print(f"Assigned Entity {entity_id} to Clan {new_clan_name}")
 
-            conn.commit()
+            conn.commit()  # Commit changes to the database
 
         elif action == "update_weapon":
-            weaponID = request.form.get('weaponID')
+            weaponID = request.form.get('weaponID')  # Get weapon ID
+
+            # Weapon attributes
             desc = request.form.get('desc')
             rank = request.form.get('rank')
             type = request.form.get('type')
@@ -464,10 +463,9 @@ def update_page():
             atkspeed = request.form.get('atkspeed')
             range = request.form.get('range')
 
+            # Prepare dynamic update query for Weapon table
             update_fields = []
             update_values = []
-
-            # Dynamically build update*TM
             if desc:
                 update_fields.append("Description = ?")
                 update_values.append(desc)
@@ -493,24 +491,25 @@ def update_page():
                 update_fields.append("Range = ?")
                 update_values.append(range)
 
+            # Execute update if fields exist
             if update_fields:
                 update_values.append(weaponID)
-
                 update_query = f"""
                     UPDATE Weapon
                     SET {', '.join(update_fields)}
                     WHERE WeaponID = ?
                 """
-
                 cursor.execute(update_query, tuple(update_values))
-                conn.commit()
+                conn.commit()  # Commit changes to the database
 
         elif action == "update_guild":
+            # Retrieve guild details from the form
             old_guild_name = request.form.get('oldGuildName')
             new_guild_name = request.form.get('newGuildName')
             guild_bonus = request.form.get('guildBonus')
             total_players = request.form.get('totalPlayers')
 
+            # Build dynamic update query for the Guild table
             update_guild_query = "UPDATE Guild SET "
             update_values = []
             update_fields = []
@@ -529,10 +528,11 @@ def update_page():
                 update_guild_query += ", ".join(update_fields) + " WHERE GuildName = ?"
                 update_values.append(old_guild_name)
 
+                # Execute the Guild update query
                 cursor.execute(update_guild_query, update_values)
                 print(f"Guild '{old_guild_name}' updated successfully.")
 
-            # If the guild name is updated, update PlayerBelongs table
+            # Update PlayerBelongs table if the guild name was changed
             if new_guild_name:
                 cursor.execute("""
                     UPDATE PlayerBelongs
@@ -543,13 +543,14 @@ def update_page():
 
             conn.commit()
 
-
         elif action == "update_clan":
+            # Retrieve clan details from the form
             old_clan_name = request.form.get('oldClanName')
             new_clan_name = request.form.get('newClanName')
             clan_bonus = request.form.get('clanBonus')
             boss_name = request.form.get('bossName')
 
+            # Build dynamic update query for the Clan table
             update_clan_query = "UPDATE Clan SET "
             update_values = []
             update_fields = []
@@ -568,10 +569,11 @@ def update_page():
                 update_clan_query += ", ".join(update_fields) + " WHERE ClanName = ?"
                 update_values.append(old_clan_name)
 
+                # Execute the Clan update query
                 cursor.execute(update_clan_query, update_values)
                 print(f"Clan '{old_clan_name}' updated successfully.")
 
-            # If the clan name updated, update EnemyBelongs table as well
+            # Update EnemyBelongs table if the clan name was changed
             if new_clan_name:
                 cursor.execute("""
                     UPDATE EnemyBelongs
@@ -582,27 +584,15 @@ def update_page():
 
             conn.commit()
 
-
-        
         elif action == "assign_weapon_equipped":
+            # Retrieve entity and weapon IDs
             entity_id = request.form.get('entityID')
             weapon_id = request.form.get('weaponID')
 
-            conn = get_db_connection()
-            cursor = conn.cursor()
-
-            cursor.execute("""
-                SELECT EntityID 
-                FROM Entity 
-                WHERE EntityID = ?
-            """, (entity_id,))
+            # Validate existence of Entity and Weapon
+            cursor.execute("SELECT EntityID FROM Entity WHERE EntityID = ?", (entity_id,))
             entity_exists = cursor.fetchone()
-
-            cursor.execute("""
-                SELECT WeaponID 
-                FROM Weapon 
-                WHERE WeaponID = ?
-            """, (weapon_id,))
+            cursor.execute("SELECT WeaponID FROM Weapon WHERE WeaponID = ?", (weapon_id,))
             weapon_exists = cursor.fetchone()
 
             if not entity_exists:
@@ -613,30 +603,20 @@ def update_page():
                 conn.close()
                 return render_template('read.html', message=f"Weapon with ID {weapon_id} does not exist.", column_names=None, data=None)
 
-            cursor.execute("""
-                SELECT * 
-                FROM Equipped 
-                WHERE WeaponID = ?
-            """, (weapon_id,))
+            # Check if the weapon is already equipped
+            cursor.execute("SELECT * FROM Equipped WHERE WeaponID = ?", (weapon_id,))
             already_equipped = cursor.fetchone()
-
             if already_equipped:
                 conn.close()
                 return render_template('read.html', message=f"Weapon with ID {weapon_id} is already equipped by another entity.", column_names=None, data=None)
 
-            cursor.execute("""
-                SELECT WeaponID 
-                FROM Equipped 
-                WHERE EntityID = ?
-            """, (entity_id,))
+            # Remove any currently equipped weapon for the entity
+            cursor.execute("SELECT WeaponID FROM Equipped WHERE EntityID = ?", (entity_id,))
             currently_equipped = cursor.fetchone()
-
             if currently_equipped:
-                cursor.execute("""
-                    DELETE FROM Equipped 
-                    WHERE EntityID = ?
-                """, (entity_id,))
+                cursor.execute("DELETE FROM Equipped WHERE EntityID = ?", (entity_id,))
 
+            # Assign the new weapon to the entity
             cursor.execute("""
                 INSERT INTO Equipped (EntityID, WeaponID)
                 VALUES (?, ?)
@@ -644,22 +624,16 @@ def update_page():
 
             conn.commit()
             conn.close()
-
             return render_template('read.html', message=f"Weapon with ID {weapon_id} successfully equipped to Entity with ID {entity_id}.", column_names=None, data=None)
 
-    
-
         elif action == "assign_weapon_inventory":
+            # Retrieve entity and weapon IDs
             entity_id = request.form.get('entityID')
             weapon_id = request.form.get('weaponID')
 
-            conn = get_db_connection()
-            cursor = conn.cursor()
-
-            # checks if weapon is in entity's inventory
+            # Check if weapon is already in the inventory
             cursor.execute("""
-                SELECT 1 
-                FROM Inventory
+                SELECT 1 FROM Inventory
                 WHERE EntityID = ? AND WeaponID = ?
             """, (entity_id, weapon_id))
             result = cursor.fetchone()
@@ -667,29 +641,25 @@ def update_page():
             if result:
                 message = f"Weapon ID {weapon_id} is already in the inventory of Entity ID {entity_id}."
             else:
+                # Add weapon to inventory
                 cursor.execute("""
                     INSERT INTO Inventory (EntityID, WeaponID)
                     VALUES (?, ?)
                 """, (entity_id, weapon_id))
                 conn.commit()
-
                 message = f"Weapon ID {weapon_id} successfully added to the inventory of Entity ID {entity_id}."
 
             conn.close()
             return render_template('read.html', message=message)
 
-        
-
         elif action == "assign_weapon_candrop":
+            # Retrieve entity and weapon IDs
             entity_id = request.form.get('entityID')
             weapon_id = request.form.get('weaponID')
 
-            conn = get_db_connection()
-            cursor = conn.cursor()
-
+            # Check if weapon is already in the CanDrop list
             cursor.execute("""
-                SELECT 1 
-                FROM CanDrop
+                SELECT 1 FROM CanDrop
                 WHERE EntityID = ? AND WeaponID = ?
             """, (entity_id, weapon_id))
             result = cursor.fetchone()
@@ -697,6 +667,7 @@ def update_page():
             if result:
                 message = f"Weapon ID {weapon_id} is already in the CanDrop list for Entity ID {entity_id}."
             else:
+                # Add weapon to CanDrop list
                 cursor.execute("""
                     INSERT INTO CanDrop (EntityID, WeaponID)
                     VALUES (?, ?)
@@ -707,33 +678,33 @@ def update_page():
             conn.close()
             return render_template('read.html', message=message)
 
-            
-
-        
-
+        # Commit and close the database connection
         conn.commit()
         conn.close()
         return redirect(url_for('update_page'))
 
+    # Render the update page for GET requests
     return render_template('update.html')
+
 
 
 
 @app.route('/read', methods=['GET', 'POST'])
 def read_page():
+    # Initialize variables for column names and data
     column_names = []
     data = []
 
     if request.method == 'POST':
+        # Get the action type from the form
         action = request.form.get('action')
 
+        # Establish database connection
         conn = get_db_connection()
         cursor = conn.cursor()
 
         if action == "all_players":
-
-            print("all_players CALLED")
-
+            # Fetch all players and their corresponding entity attributes
             cursor.execute("""
                 SELECT 
                     p.EntityID AS 'Entity ID',
@@ -754,20 +725,14 @@ def read_page():
                 ORDER BY 
                     p.EntityID ASC
             """)
+            # Retrieve column names and data
             column_names = [desc[0] for desc in cursor.description]
             data = cursor.fetchall()
-
-            print(column_names)
-
             conn.close()
-
-            # Render template with data and column names
             return render_template('read.html', column_names=column_names, data=data)
 
         elif action == "all_enemies":
-            conn = get_db_connection()
-            cursor = conn.cursor()
-
+            # Fetch all enemies and their corresponding entity attributes
             cursor.execute("""
                 SELECT 
                     e.EntityID AS 'Entity ID',
@@ -788,20 +753,13 @@ def read_page():
                 ORDER BY 
                     e.EntityID ASC
             """)
-
-            # Fetch column names and data
             column_names = [desc[0] for desc in cursor.description]
             data = cursor.fetchall()
-
             conn.close()
-
-            # Render template with data and column names
             return render_template('read.html', column_names=column_names, data=data)
 
         elif action == "all_guilds":
-            conn = get_db_connection()
-            cursor = conn.cursor()
-
+            # Fetch all guilds with their attributes
             cursor.execute("""
                 SELECT 
                     GuildName AS 'Guild Name',
@@ -812,20 +770,13 @@ def read_page():
                 ORDER BY 
                     TotalPlayers DESC
             """)
-
-            # Fetch column names and data
             column_names = [desc[0] for desc in cursor.description]
             data = cursor.fetchall()
-
             conn.close()
-
-            # Render template with data and column names
             return render_template('read.html', column_names=column_names, data=data)
         
         elif action == "all_clans":
-            conn = get_db_connection()
-            cursor = conn.cursor()
-
+            # Fetch all clans with their attributes
             cursor.execute("""
                 SELECT 
                     ClanName AS 'Clan Name',
@@ -836,21 +787,13 @@ def read_page():
                 ORDER BY 
                     ClanName ASC
             """)
-
-            # Fetch column names and data
             column_names = [desc[0] for desc in cursor.description]
             data = cursor.fetchall()
-
             conn.close()
-
-            # Render template with data and column names
             return render_template('read.html', column_names=column_names, data=data)
 
-        
         elif action == "all_weapons":
-            conn = get_db_connection()
-            cursor = conn.cursor()
-
+            # Fetch all weapons and their attributes
             cursor.execute("""
                 SELECT 
                     WeaponID AS 'Weapon ID',
@@ -867,23 +810,14 @@ def read_page():
                 ORDER BY 
                     WeaponID ASC
             """)
-
-            # Fetch column names and data
             column_names = [desc[0] for desc in cursor.description]
             data = cursor.fetchall()
-
             conn.close()
-
-            # Render template with data and column names
             return render_template('read.html', column_names=column_names, data=data)
 
-
         elif action == "guild_members":
+            # Fetch all members of a specific guild
             guild_name = request.form.get('guildName')
-
-            conn = get_db_connection()
-            cursor = conn.cursor()
-
             cursor.execute("""
                 SELECT 
                     pb.GuildName AS 'Guild Name',
@@ -907,23 +841,14 @@ def read_page():
                 ORDER BY 
                     e.Level DESC
             """, (guild_name,))
-
-            # Fetch column names and data
             column_names = [desc[0] for desc in cursor.description]
             data = cursor.fetchall()
-
             conn.close()
-
-            # Render template with data and column names
             return render_template('read.html', column_names=column_names, data=data)
 
-
         elif action == "clan_members":
+            # Fetch all members of a specific clan
             clan_name = request.form.get('clanName')
-
-            conn = get_db_connection()
-            cursor = conn.cursor()
-
             cursor.execute("""
                 SELECT 
                     c.ClanName AS 'Clan Name',
@@ -948,31 +873,25 @@ def read_page():
                 ORDER BY 
                     e.Level DESC
             """, (clan_name,))
-
-            # Fetch column names and data
             column_names = [desc[0] for desc in cursor.description]
             data = cursor.fetchall()
-
             conn.close()
-
-            # Render template with data and column names
             return render_template('read.html', column_names=column_names, data=data)
 
 
         elif action == "specific_entity":
-
+            # Retrieve entity ID from the form
             entity_id = request.form.get('entityID')
 
             conn = get_db_connection()
             cursor = conn.cursor()
 
-            # Determine entity type
+            # Determine the entity type (Player or Enemy)
             cursor.execute("SELECT Type FROM Entity WHERE EntityID = ?", (entity_id,))
             result = cursor.fetchone()
-
             entity_type = result[0]
 
-            if entity_type == 'P':
+            if entity_type == 'P':  # Entity is a Player
                 cursor.execute("""
                     SELECT 
                         e.EntityID AS 'Entity ID',
@@ -991,9 +910,7 @@ def read_page():
                     WHERE 
                         e.EntityID = ?
                 """, (entity_id,))
-
-
-            elif entity_type == 'E':
+            elif entity_type == 'E':  # Entity is an Enemy
                 cursor.execute("""
                     SELECT 
                         e.EntityID AS 'Entity ID',
@@ -1013,7 +930,7 @@ def read_page():
                         e.EntityID = ?
                 """, (entity_id,))
             else:
-                # Handle unexpected type
+                # Handle unexpected entity type
                 return render_template('read.html', column_names=[], data=[], error=f"Unexpected entity type for ID {entity_id}.")
 
             # Fetch column names and data
@@ -1022,16 +939,17 @@ def read_page():
 
             conn.close()
 
-            # Render template with data and column names
+            # Render template with entity data
             return render_template('read.html', column_names=column_names, data=data)
 
-
         elif action == "specific_weapon":
+            # Retrieve weapon ID from the form
             weapon_id = request.form.get('weaponID')
 
             conn = get_db_connection()
             cursor = conn.cursor()
 
+            # Fetch specific weapon details
             cursor.execute("""
                 SELECT 
                     WeaponID AS 'Weapon ID',
@@ -1055,16 +973,17 @@ def read_page():
 
             conn.close()
 
-            # Render template with data and column names
+            # Render template with weapon data
             return render_template('read.html', column_names=column_names, data=data)
 
-
         elif action == "specific_guild":
+            # Retrieve guild name from the form
             guild_name = request.form.get('guildName')
 
             conn = get_db_connection()
             cursor = conn.cursor()
 
+            # Fetch specific guild details
             cursor.execute("""
                 SELECT 
                     GuildName AS 'Guild Name',
@@ -1082,16 +1001,17 @@ def read_page():
 
             conn.close()
 
-            # Render template with data and column names
+            # Render template with guild data
             return render_template('read.html', column_names=column_names, data=data)
 
-
         elif action == "specific_clan":
+            # Retrieve clan name from the form
             clan_name = request.form.get('clanName')
 
             conn = get_db_connection()
             cursor = conn.cursor()
 
+            # Fetch specific clan details
             cursor.execute("""
                 SELECT 
                     ClanName AS 'Clan Name',
@@ -1109,16 +1029,17 @@ def read_page():
 
             conn.close()
 
-            # Render template with data and column names
+            # Render template with clan data
             return render_template('read.html', column_names=column_names, data=data)
 
-
         elif action == "player_inventory":
+            # Retrieve player entity ID from the form
             entity_id = request.form.get('entityID')
 
             conn = get_db_connection()
             cursor = conn.cursor()
 
+            # Fetch player's inventory details
             cursor.execute("""
                 SELECT 
                     p.Username AS 'Player Name',
@@ -1148,16 +1069,17 @@ def read_page():
 
             conn.close()
 
-            # Render template with data and column names
+            # Render template with inventory data
             return render_template('read.html', column_names=column_names, data=data)
 
-
         elif action == "enemy_can_drop":
+            # Retrieve enemy entity ID from the form
             entity_id = request.form.get('entityID')
 
             conn = get_db_connection()
             cursor = conn.cursor()
 
+            # Fetch weapons the enemy can drop
             cursor.execute("""
                 SELECT 
                     e.Name AS 'Enemy Name',
@@ -1187,16 +1109,17 @@ def read_page():
 
             conn.close()
 
-            # Render template with data and column names
+            # Render template with drop data
             return render_template('read.html', column_names=column_names, data=data)
-        
 
         elif action == "entity_equipped_weapon":
+            # Retrieve entity ID from the form
             entity_id = request.form.get('entityID')
 
             conn = get_db_connection()
             cursor = conn.cursor()
 
+            # Fetch equipped weapon details for the entity
             cursor.execute("""
                 SELECT 
                     CASE 
@@ -1235,15 +1158,14 @@ def read_page():
 
             conn.close()
 
-            # Render template with data and column names
+            # Render template with equipped weapon data
             return render_template('read.html', column_names=column_names, data=data)
-
-
 
         elif action == "weapon_type_avg":
             conn = get_db_connection()
             cursor = conn.cursor()
 
+            # Fetch average stats for weapons of type "Common"
             cursor.execute("""
                 SELECT 
                     Type AS 'Weapon Type',
@@ -1267,11 +1189,8 @@ def read_page():
 
             conn.close()
 
-            # Render template with data and column names
+            # Render template with average weapon stats
             return render_template('read.html', column_names=column_names, data=data)
-
-
-
 
         return render_template('read.html', data=data)
 

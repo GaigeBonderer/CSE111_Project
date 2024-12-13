@@ -34,10 +34,12 @@ def get_db_connection():
 
 # /////////////////////////////////////////////////////////////////////////////////////////
 
+# Function to populate the Clan table with clan details
 def populate_clans():
     conn = get_db_connection()
     cursor = conn.cursor()
 
+    # Insert each clan's details into the Clan table
     for clan_name, details in clan_details.items():
         boss_name = details["BossName"]
         clan_bonus = details["ClanBonus"]
@@ -47,17 +49,16 @@ def populate_clans():
             VALUES (?, ?, ?)
         """, (clan_name, clan_bonus, boss_name))
 
-    conn.commit()
-    conn.close()
+    conn.commit()  # Commit the transaction
+    conn.close()   # Close the database connection
     print("All clans created successfully with unique values.")
 
 # /////////////////////////////////////////////////////////////////////////////////////////
 
+# Entry point for the script
 if __name__ == "__main__":
-
-    create_tables()
-
-    populate_clans()
+    create_tables()  # Create tables in the database
+    populate_clans() # Populate the Clan table with predefined data
 
     # Drop tables (Uncomment as needed)
 
